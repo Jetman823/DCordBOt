@@ -11,6 +11,8 @@ public struct CommandInfo
     public string commandName;
     public int commandType;
     public byte argc;
+    public string desc;
+    public int kawaiiType;
 };
 
 namespace DCordBot
@@ -22,7 +24,6 @@ namespace DCordBot
         private static NSFWCommands nsfwCommands = new NSFWCommands();
         private static AdminCommands adminCommands = new AdminCommands();
         private static KawaiiCommands kawaiiCommands = new KawaiiCommands();
-        private static GameCommands gameCommands = new GameCommands();
         private static Marriage marriageCommands = new Marriage();
 
         public void Load()
@@ -39,7 +40,9 @@ namespace DCordBot
                     {
                         commandName = childNode.InnerText,
                         commandType = Convert.ToInt32(childNode.Attributes["type"].Value),
-                        argc = Convert.ToByte(childNode.Attributes["argc"].Value)
+                        argc = Convert.ToByte(childNode.Attributes["argc"].Value),
+                        desc = Convert.ToString(childNode.Attributes["desc"] == null ? "" : childNode.Attributes["desc"].Value ),
+                        kawaiiType = Convert.ToInt32(childNode.Attributes["kawaiiType"] == null ? "-1" : childNode.Attributes["kawaiiType"].Value)
                     };
                     commandList.Add(comm);
                 }

@@ -9,10 +9,26 @@ namespace DCordBot
     {
         public override async Task Response(SocketMessage message,CommandInfo commandInfo)
         {
-            if(message.Content.Contains("!kick"))
-                await ResponseKick(message,(SocketGuildUser)message.Author);
-            if(message.Content.Contains("!ban"))
-                await ResponseBan(message,(SocketGuildUser)message.Author);
+            string commandName = commandInfo.commandName.ToLower();
+            switch(commandName)
+            {
+                case "!kick":
+                    {
+                        await ResponseKick(message, (SocketGuildUser)message.Author);
+                    }break;
+                case "!ban":
+                    {
+                        await ResponseBan(message, (SocketGuildUser)message.Author);
+                    }
+                    break;
+                case "!unban":
+                    {
+                        await ResponseUnBan(message, (SocketGuildUser)message.Author);
+                    }
+                    break;
+                default:
+                    return;
+            }
         }
 
         private static async Task ResponseKick(SocketMessage message, SocketGuildUser admin)
@@ -47,9 +63,9 @@ namespace DCordBot
         /// <param name="message"></param>
         /// <param name="admin"></param>
         /// <returns></returns>
-        private static async Task ResponseBan(SocketMessage message, SocketGuildUser admin)
+        public static async Task ResponseBan(SocketMessage message, SocketGuildUser admin)
         {
-            var role = (admin as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Name == "Admin");
+            var role = (admin as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Name == "Hospitalized Inmates" || x.Name == "Professional Spanker");
             if (!admin.Roles.Contains(role))
             {
                 return;
@@ -58,19 +74,39 @@ namespace DCordBot
             var usersToBan = message.MentionedUsers;
             foreach (var user in usersToBan)
             {
-                if (user.IsBot)
+                if (user.IsBot && message.Author.Username != "DeffJay")
                 {
                     await message.Channel.SendMessageAsync("Why would you ban a bot?!");
                     continue;
                 }
 
-                foreach (var targetRole in ((SocketGuildUser)(user)).Roles)
+                if(user.Username == "DeffJay")
                 {
-                    if (targetRole.Name.Contains("Admin"))
-                        continue;
+                    await message.Channel.SendMessageAsync("I will not let you ban my master! Counter Ban!");
+                    await ((SocketGuildUser)message.Author).BanAsync();
+                    return;
                 }
 
-                await (((SocketGuildUser)(user)).BanAsync());
+                var chnl = message.Channel as SocketGuildChannel;
+
+                await message.Channel.SendMessageAsync("User is Banned!");
+                await chnl.Guild.AddBanAsync(user, 1);
+            }
+        }
+
+        private static async Task ResponseUnBan(SocketMessage message, SocketGuildUser admin)
+        {
+            var role = (admin as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Name == "Hospitalized Inmates");
+            if (!admin.Roles.Contains(role))
+                return;
+
+            if (message.Author.Username != "DeffJay")
+                return;
+
+            var usersToUnBan = message.MentionedUsers;
+            foreach(var user in usersToUnBan)
+            {
+                await ((IGuild)message.Channel).RemoveBanAsync(user);
             }
         }
     }

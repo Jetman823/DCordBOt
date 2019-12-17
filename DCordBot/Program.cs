@@ -15,6 +15,7 @@ namespace DCordBot
     class Program
     {
         public static SqlConnection connection = null;
+        public static SqlConnection botConnection = null;
         public static DiscordSocketClient client;
         public CommandModule commandModule;
         public ZItemManager itemManager;
@@ -30,17 +31,26 @@ namespace DCordBot
             //{
             //    Console.Write(exception.Message);
             //}
+            botConnection = new SqlConnection(@"Server=DESKTOP-AR9BK07;Database=DCordBot;Trusted_Connection=Yes;");
+            try
+            {
+                botConnection.Open();
+            }
+            catch(SqlException ex)
+            {
+                Console.Write(ex.Message);
+            }
 
             client = new DiscordSocketClient();
             client.Ready += ReadyAsync;
             client.MessageReceived += MessageReceieved;
             client.UserJoined += UserJoined;
             client.UserLeft += UserLeft;
-
             itemManager = new ZItemManager();
             itemManager.Load();
 
             nFSWImages.Load();
+            
         }
 
         public static void Main(string[] args)

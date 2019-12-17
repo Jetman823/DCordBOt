@@ -1,189 +1,77 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using System.Xml;
 
-public struct Images
+public class Image
 {
-    public string filePath;
-    public char    imageType;
-};
+    [JsonProperty("_type")]
+    public int _type { get; set; }
+    [JsonProperty("_filePath")]
+    public string _filePath { get; set; }
+}
+
+public class ImageList
+{
+    [JsonProperty("Images")]
+    public List<Image> Images { get; set; }
+}
 
 namespace DCordBot
 {
     class KawaiiCommands : CommandModule
     {
-        private static List<Images> kawaiiImages;
+        private static ImageList kawaiiImages;
 
         public KawaiiCommands()
         {
-            kawaiiImages = new List<Images>();
-            XmlDocument doc = new XmlDocument();
-            XmlReaderSettings settings = new XmlReaderSettings
+            kawaiiImages = new ImageList();
+
+            using (StreamReader r = new StreamReader("kawaiiImages.json"))
             {
-                IgnoreComments = true
-            };
-            XmlReader reader = XmlReader.Create("KawaiiImages.xml", settings);
-            doc.Load(reader);
-            foreach (XmlNode childNode in doc.FirstChild)
-            {
-                if (childNode.Name == "IMAGE")
-                {
-                    Images imageInfo = new Images
-                    {
-                        imageType = Convert.ToChar(childNode.Attributes["type"].Value),
-                        filePath = childNode.Attributes["filePath"].Value
-                    };
-                    kawaiiImages.Add(imageInfo);
-                }
+                string json = r.ReadToEnd();
+                kawaiiImages = JsonConvert.DeserializeObject<ImageList>(json);
             }
+            return;
         }
         override public async Task Response(SocketMessage message, CommandInfo command)
         {
-            switch (command.commandName.ToLower())
+            if(command.commandType == 3)
             {
-                case "!hug":
-                    {
-                        await ResponseHug(message);
-                    }
-                    break;
-                case "!kiss":
-                    {
-                        await ResponseKiss(message);
-                    }
-                    break;
-                case "!lick":
-                    {
-                        await ResponseLick(message);
-                    }
-                    break;
-                case "!slap":
-                    {
-                        await ResponseSlap(message);
-                    }
-                    break;
-                case "!glare":
-                    {
-                        await ResponseGlare(message);
-                    }
-                    break;
-                default:
-                    return;
+                await ResponseKawaii(message,command);
             }
+            return;
         }
 
-        private async Task ResponseHug(SocketMessage message)
-        {
-            string response = message.Author.Username + " Hugs ";
+        private async Task ResponseKawaii(SocketMessage message,CommandInfo command)
+        {               
             if (message.MentionedUsers.Count < 1)
                 return;
-            foreach(SocketUser user in message.MentionedUsers)
-            {
-                response += " " + user.Username;
-            }
-            var embed = new EmbedBuilder
-            {
-                Color = Color.Red,
-                Title = response
-            };
-            Random random = new Random();
-            List<Images> image = kawaiiImages.FindAll(x => x.imageType == '0');
-            int index = random.Next(0, image.Count);
-            embed.WithImageUrl(image[index].filePath);
-            await message.Channel.SendMessageAsync("",false,embed.Build());
-        }
 
-        private async Task ResponseKiss(SocketMessage message)
-        {
-            string response = message.Author.Username + " Kisses ";
-            if (message.MentionedUsers.Count < 1)
-                return;
+            string response = command.desc;
+            response = response.Replace("$1", message.Author.Username);
+
             foreach (SocketUser user in message.MentionedUsers)
             {
                 response += " " + user.Username;
             }
+            response += "!";
             var embed = new EmbedBuilder
             {
                 Color = Color.Red,
                 Title = response
             };
             Random random = new Random();
-            List<Images> image = kawaiiImages.FindAll(x => x.imageType == '1');
+            List<Image> image = kawaiiImages.Images.FindAll(x => x._type == command.kawaiiType);
             int index = random.Next(0, image.Count);
-            embed.WithImageUrl(image[index].filePath);
+            embed.WithImageUrl(image[index]._filePath);
             await message.Channel.SendMessageAsync("", false, embed.Build());
-        }
 
-        private async Task ResponseLick(SocketMessage message)
-        {
-            string response = message.Author.Username + " Licks ";
-            if (message.MentionedUsers.Count < 1)
-                return;
-            foreach (SocketUser user in message.MentionedUsers)
-            {
-                response += " " + user.Username;
-            }
-            var embed = new EmbedBuilder
-            {
-                Color = Color.Red,
-                Title = response
-            };
-
-            Random random = new Random();
-            List<Images> image = kawaiiImages.FindAll(x => x.imageType == '2');
-            int index = random.Next(0, image.Count);
-            embed.WithImageUrl(image[index].filePath);
-            await message.Channel.SendMessageAsync("", false, embed.Build());
-        }
-
-        private async Task ResponseSlap(SocketMessage message)
-        {
-            string response = message.Author.Username + " Slapped ";
-            if (message.MentionedUsers.Count < 1)
-                return;
-
-            foreach(SocketUser user in message.MentionedUsers)
-            {
-                response += " " + user.Username;
-            }
-
-            var embed = new EmbedBuilder
-            {
-                Color = Color.Red,
-                Title = response
-            };
-
-            Random random = new Random();
-            List<Images> image = kawaiiImages.FindAll(x => x.imageType == '3');
-            int index = random.Next(0, image.Count);
-            embed.WithImageUrl(image[index].filePath);
-            await message.Channel.SendMessageAsync("", false, embed.Build());
-        }
-
-        private async Task ResponseGlare(SocketMessage message)
-        {
-            string response = message.Author.Username + " Glared at ";
-            if (message.MentionedUsers.Count < 1)
-                return;
-
-            foreach(SocketUser user in message.MentionedUsers)
-            {
-                response += " " + user.Username;
-            }
-
-            var embed = new EmbedBuilder
-            {
-                Color = Color.Red,
-                Title = response
-            };
-            Random random = new Random();
-            List<Images> image = kawaiiImages.FindAll(x => x.imageType == '4');
-            int index = random.Next(0, image.Count);
-            embed.WithImageUrl(image[index].filePath);
-
-            await message.Channel.SendMessageAsync("", false, embed.Build());
+            var socketGuild = message.Channel as SocketGuild;
+            Console.Write(socketGuild.Id);
         }
     }
 }

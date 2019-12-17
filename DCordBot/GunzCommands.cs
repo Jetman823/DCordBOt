@@ -117,7 +117,7 @@ namespace DCordBot
             reader.Close();
             command.Dispose();
 
-            var embed = new EmbedBuilder
+            EmbedBuilder embed = new EmbedBuilder
             {
                 Color = Color.Red,
                 Title = "Character Information:\n"

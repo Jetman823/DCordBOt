@@ -1,19 +1,19 @@
 <XML>
 	<COMMANDS>
 		<COMMAND argc="1" type="0">!CharInfo</COMMAND>
+		<COMMAND argc="0" type="1">!Kick</COMMAND>
+		<COMMAND argc="0" type="2">!Ban</COMMAND>
 		<COMMAND argc="0" type="0">!ServerStatus</COMMAND>
 		<COMMAND argc="1" type="0">!GetItem</COMMAND>
 		<COMMAND argc="0" type="0">!Help</COMMAND>
 		<COMMAND argc="0" type="0">!Yandere</COMMAND>
 		<COMMAND argc="0" type="0">!GelBooru</COMMAND>
-		<COMMAND argc="0" type="0">!Danbooru</COMMAND>
-		<COMMAND argc="0" type="0">!Kiss</COMMAND>
-		<COMMAND argc="0" type="1">!Kick</COMMAND>
-		<COMMAND argc="0" type="2">!Ban</COMMAND>
-		<COMMAND argc="0" type="0">!Hug</COMMAND>
-		<COMMAND argc="0" type="0">!Lick</COMMAND>
-		<COMMAND argc="0" type="0">!Slap</COMMAND>
-		<COMMAND argc="0" type="0">!Glare</COMMAND>
+		<COMMAND argc="0" type="0" desc="$1 Kisses" kawaiiType="1">!Danbooru</COMMAND>
+		<COMMAND argc="0" type="3" desc="$1 Kisses" kawaiiType="1">!Kiss</COMMAND>
+		<COMMAND argc="0" type="3" desc="$1 Hugs" kawaiiType="0">!Hug</COMMAND>
+		<COMMAND argc="0" type="3" desc="$1 Licks" kawaiiType="2">!Lick</COMMAND>
+		<COMMAND argc="0" type="3" desc="$1 Slaps" kawaiiType="3">!Slap</COMMAND>
+		<COMMAND argc="0" type="3" desc="$1 Glares" kawaiiType="4">!Glare</COMMAND>
 		<COMMAND argc="0" type="0">!BjNew</COMMAND>
 		<COMMAND argc="0" type="0">!BjHit</COMMAND>
 		<COMMAND argc="0" type="0">!BjStay</COMMAND>
@@ -24,5 +24,6 @@
 		<COMMAND argc="0" type="0">!AcceptProposal</COMMAND>
 		<COMMAND argc="0" type="0">!RejectProposal</COMMAND>
 		<COMMAND argc="0" type="0">!Divorce</COMMAND>
+		<COMMAND argc="99" type="0">!Unban</COMMAND>
 	</COMMANDS>
 </XML>

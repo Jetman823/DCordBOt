@@ -32,7 +32,7 @@ namespace DCordBot
         {
             using (var webClient = new System.Net.WebClient())
             {
-                var json = webClient.DownloadString("https://yande.re/post.json?tags=");
+                var json = webClient.DownloadString("https://yande.re/post.json");
 
                 JsonArray obj = new JsonArray(json);
 

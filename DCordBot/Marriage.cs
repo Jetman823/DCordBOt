@@ -2,10 +2,10 @@
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 
 public struct CurrentProposals
 {
@@ -13,35 +13,19 @@ public struct CurrentProposals
     public string user2;
 }
 
-struct Marriages
+
+
+public class MarriageStruct
 {
-    public string user1;
-    public string user2;
-};
+    public string _user1 { get; set; }
+    public string _user2 { get; set; }
+}
 
 namespace DCordBot
 {
     class Marriage : CommandModule
     {
-        private List<Marriages> marriages = new List<Marriages>();
         private List<CurrentProposals> proposals = new List<CurrentProposals>();
-        public Marriage()
-        {
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load("Marriages.xml");
-
-            foreach (XmlNode childNode in xmlDoc.FirstChild)
-            {
-                if(childNode.Name == "MARRIAGE")
-                {
-                    Marriages marriage = new Marriages();
-                    marriage.user1 = childNode.Attributes["user1"].Value;
-                    marriage.user2 = childNode.Attributes["user2"].Value;
-
-                    marriages.Add(marriage);
-                }
-            }
-        }
 
         override public async Task Response(SocketMessage message, CommandInfo command)
         {
@@ -79,75 +63,93 @@ namespace DCordBot
         public async Task ResponseMarriageStatus(SocketMessage message)
         {
             string response = "";
-            foreach(Marriages marriage in marriages)
+
+            SqlCommand command = new SqlCommand("CheckUserMarriageStatus", Program.botConnection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@User1", message.Author.Username);
+
+            SqlDataReader reader = null;
+
+            try
             {
-                string user = message.Author.Username;
-                if(user == marriage.user1)
-                {
-                    response = message.Author.Username + " is married to " + marriage.user2;
-                }
-                else if(user == marriage.user2)
-                {
-                    response = message.Author.Username + " is married to " + marriage.user1;
-                }
-                await message.Channel.SendMessageAsync(response);
+                reader = command.ExecuteReader();
             }
+            catch (Exception e)
+            {
+                return;
+            }
+            MarriageStruct marriage = new MarriageStruct();
+            marriage._user1 = reader.GetString(0);
+            marriage._user2 = reader.GetString(1);
+            reader.Close();
+            command.Dispose();
+
+            string user = message.Author.Username;
+            if (user == marriage._user1)
+            {
+                response = message.Author.Username + " is married to " + marriage._user2;
+            }
+            else if (user == marriage._user2)
+            {
+                response = message.Author.Username + " is married to " + marriage._user1;
+            }
+            await message.Channel.SendMessageAsync(response);
         }
 
         public async Task ResponseProposal(SocketMessage message)
         {
-            if(message.MentionedUsers.Count > 1)
+            SocketGuildUser targetUser = (SocketGuildUser)message.MentionedUsers.ElementAt(0);
+            var roles = targetUser.Roles;
+
+            SqlCommand command = new SqlCommand("CheckUserMarriageStatus", Program.botConnection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.Add("@User1", SqlDbType.VarChar, 50).Value = targetUser.Username;
+            command.Parameters.Add("@User2", SqlDbType.VarChar, 50).Value = message.Author.Username;
+            command.Parameters.Add("@ServerID", SqlDbType.BigInt).Value = ((SocketGuildUser)message.Channel).Id;
+
+            int returnValue = 0;
+            SqlDataReader reader = command.ExecuteReader();
+            while(reader.Read())
             {
-                //no polygamy;
-                return;
+                returnValue = reader.GetInt32(0);
             }
-            XmlDocument doc = new XmlDocument();
-            doc.Load("Marriages.xml");
-            XmlNode rootNode = doc.FirstChild;
-
-            foreach(Marriages marriage in marriages)
+            if(returnValue == 1)
             {
-                if(message.MentionedUsers.ElementAt(0).Username == marriage.user1 || message.MentionedUsers.ElementAt(0).Username == marriage.user2)
-                {
-                    EmbedBuilder embed = new EmbedBuilder()
-                    {
-                        Color = Color.Red,
-                        Title = message.MentionedUsers.ElementAt(0).Username + " is already married!"
-                    };
-                    await message.Channel.SendMessageAsync("", false, embed.Build());
-                    return;
-                }
-
-                if(message.Author.Username == marriage.user1 || message.Author.Username == marriage.user2)
-                {
-                    EmbedBuilder embed = new EmbedBuilder()
-                    {
-                        Color = Color.Red,
-                        Title ="You're already married!"
-                    };
-                    await message.Channel.SendMessageAsync("", false, embed.Build());
-                    return;
-                }
-            }
-
-            if (proposals.Count == 0)
-            {
-                CurrentProposals newProposal = new CurrentProposals();
-                newProposal.user1 = message.Author.Username;
-                newProposal.user2 = message.MentionedUsers.ElementAt(0).Username;
-                proposals.Add(newProposal);
-
                 EmbedBuilder embed = new EmbedBuilder()
                 {
                     Color = Color.Red,
-                    Title = newProposal.user1 + " Is Proposing to " + newProposal.user2 + "!",
-                    Description = "to be filled, type !acceptproposal or !rejectproposal"
+                    Title = targetUser.Username + " is already married!"
                 };
-
                 await message.Channel.SendMessageAsync("", false, embed.Build());
                 return;
             }
-            foreach(CurrentProposals proposal in proposals)
+            else if(returnValue == 2)
+            {
+                EmbedBuilder embed = new EmbedBuilder()
+                {
+                    Color = Color.Red,
+                    Title = "You're already married! You must divorce your current spouse."
+                };
+                await message.Channel.SendMessageAsync("", false, embed.Build());
+                return;
+            }
+
+            else if(returnValue == 3)
+            {
+                EmbedBuilder embed = new EmbedBuilder()
+                {
+                    Color = Color.Red,
+                    Title = "You're both already married! You must divorce your current spouses."
+                };
+                await message.Channel.SendMessageAsync("", false, embed.Build());
+                return;
+            }
+
+            CurrentProposals newProposal = new CurrentProposals();
+            newProposal.user1 = message.Author.Username;
+            newProposal.user2 = message.MentionedUsers.ElementAt(0).Username;
+            proposals.Add(newProposal);
+            foreach (CurrentProposals proposal in proposals)
             {
                 if((proposal.user1 == message.Author.Username || proposal.user2 == message.Author.Username) && (proposal.user2 == message.MentionedUsers.ElementAt(0).Username ||
                     proposal.user1 == message.MentionedUsers.ElementAt(0).Username))
@@ -156,11 +158,6 @@ namespace DCordBot
                 }
                 else
                 {
-                    CurrentProposals newProposal = new CurrentProposals();
-                    newProposal.user1 = message.Author.Username;
-                    newProposal.user2 = message.MentionedUsers.ElementAt(0).Username;
-                    proposals.Add(newProposal);
-
                     EmbedBuilder embed = new EmbedBuilder()
                     {
                         Color = Color.Red,
@@ -172,28 +169,19 @@ namespace DCordBot
                     await message.Channel.SendMessageAsync("", false, embed.Build());
                 }
             }
+            return;
         }
 
         public async Task ResponseAcceptProposal(SocketMessage message)
         {
-            string responder = message.Author.Username;
+            SocketGuildUser responder = (SocketGuildUser)message.Author;
+            SocketGuildUser sender = (SocketGuildUser)message.MentionedUsers.ElementAt(0);
+            SocketGuildChannel guild = message.Channel as SocketGuildChannel;
             foreach(CurrentProposals proposal in proposals)
             {
                 string acceptedProposal = message.MentionedUsers.ElementAt(0).Username;
-                if(proposal.user1 == acceptedProposal && responder == proposal.user2)     
+                if(proposal.user1 == sender.Username && responder.Username == proposal.user2)     
                 {
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load("Marriages.xml");
-                    XmlNode childNode = doc.CreateNode(XmlNodeType.Element, "MARRIAGE", "");
-                    XmlAttribute attr = doc.CreateAttribute("user1");
-                    attr.Value = acceptedProposal;
-                    childNode.Attributes.Append(attr);
-                    attr = doc.CreateAttribute("user2");
-                    attr.Value = responder;
-                    childNode.Attributes.Append(attr);
-                    doc.DocumentElement.AppendChild(childNode);
-                    doc.Save("Marriages.xml");
-
                     EmbedBuilder embed = new EmbedBuilder()
                     {
                         Color = Color.Red,
@@ -203,17 +191,27 @@ namespace DCordBot
 
                     };
 
-                    await message.Channel.SendMessageAsync("", false, embed.Build());
-                    proposals.Remove(proposal);
 
-                    Marriages marriage = new Marriages();
-                    marriage.user1 = proposal.user1;
-                    marriage.user2 = proposal.user2;
-                    marriages.Add(marriage);
-                    proposals.RemoveAll(x => x.user1 == acceptedProposal || x.user2 == acceptedProposal);
-                    return;
+                    await message.Channel.SendMessageAsync("", false, embed.Build());
+
+                    SqlCommand command = new SqlCommand("InsertMarriage", Program.botConnection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@User1", SqlDbType.VarChar, 50).Value = proposal.user2;
+                    command.Parameters.Add("@User2", SqlDbType.VarChar, 50).Value = acceptedProposal;
+                    command.Parameters.Add("@ServerID", SqlDbType.BigInt).Value = guild.Id;
+                    try
+                    {
+                        await command.ExecuteNonQueryAsync();
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.Write(ex.Message);
+                    }
+                    command.Dispose();
+                    proposals.Remove(proposal);
                 }
             }
+            return;
         }
 
         public async Task ResponseRejectProposal(SocketMessage message)
@@ -245,49 +243,63 @@ namespace DCordBot
 
         public async Task ResponseDivorce(SocketMessage message)
         {
-            string userToDivorce = message.MentionedUsers.ElementAt(0).Username;
-            string author = message.Author.Username;
-            XmlDocument doc = new XmlDocument();
-            doc.Load("Marriages.xml");
+            SocketGuildUser targetUser = (SocketGuildUser)message.MentionedUsers.ElementAt(0);
+            SocketGuildUser sender = (SocketGuildUser)message.MentionedUsers.ElementAt(0);
 
-            XmlNode rootNode = doc.FirstChild;
-            foreach(XmlNode childNode in rootNode)
+            SqlCommand command = new SqlCommand("DivorceUser", Program.botConnection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.Add("@User1", SqlDbType.VarChar, 50).Value = sender.Username;
+            command.Parameters.Add("@User2", SqlDbType.VarChar, 50).Value = targetUser.Username;
+            command.Parameters.Add("@ServerID", SqlDbType.BigInt).Value = ((SocketGuildChannel)message.Channel).Id;
+
+            int result = 0;
+            SqlDataReader reader = command.ExecuteReader();
+            while(reader.Read())
             {
-                if (childNode.Name == "MARRIAGE")
-                {
-                    string user1 = childNode.Attributes["user1"].Value;
-                    string user2 = childNode.Attributes["user2"].Value;
-
-                    if(message.Author.Username == user1 || message.Author.Username == user2)
-                    {
-                        if(userToDivorce == user1 || userToDivorce == user2)
-                        {
-
-
-                            EmbedBuilder embed = new EmbedBuilder()
-                            {
-                                Color = Color.Red,
-                                Title = message.Author.Username + " Has Divorced " + userToDivorce + "!",
-                                Description = "todo",
-                                ImageUrl = "https://pa1.narvii.com/6289/9341ed205608180606dd197a733d3f9392a3f8b1_hq.gif"
-
-                            };
-
-                           await message.Channel.SendMessageAsync("", false, embed.Build());
-
-                            rootNode.RemoveChild(childNode);
-                        }
-                    }
-                }
+                result = reader.GetInt32(0);
             }
-            doc.Save("Marriages.xml");
-            foreach (Marriages marriage in marriages)
+            if (result == 1)
             {
-                if (marriage.user1 == userToDivorce || marriage.user2 == userToDivorce)
+                EmbedBuilder embed = new EmbedBuilder()
                 {
-                    marriages.Remove(marriage);
-                }
+                    Color = Color.Red,
+                    Title = sender.Username + " Has Divorced " + targetUser.Username + "!",
+                    Description = "todo",
+                    ImageUrl = "https://pa1.narvii.com/6289/9341ed205608180606dd197a733d3f9392a3f8b1_hq.gif"
+
+                };
+
+                await message.Channel.SendMessageAsync("", false, embed.Build());
+                return;
             }
+            else if (result == 2)
+            {
+                EmbedBuilder embed = new EmbedBuilder()
+                {
+                    Color = Color.Red,
+                    Title = sender.Username + " Has Divorced " + targetUser.Username + "!",
+                    Description = "todo",
+                    ImageUrl = "https://pa1.narvii.com/6289/9341ed205608180606dd197a733d3f9392a3f8b1_hq.gif"
+
+                };
+
+                await message.Channel.SendMessageAsync("", false, embed.Build());
+                return;
+            }
+
+            else
+            {
+                EmbedBuilder embed = new EmbedBuilder()
+                {
+                    Color = Color.Red,
+                    Title = sender.Username + " Has Divorced " + targetUser.Username + "!",
+                    Description = "todo",
+                    ImageUrl = "https://pa1.narvii.com/6289/9341ed205608180606dd197a733d3f9392a3f8b1_hq.gif"
+                };
+
+                await message.Channel.SendMessageAsync("", false, embed.Build());
+            }
+            return;
         }
     }
 }

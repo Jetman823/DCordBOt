@@ -134,7 +134,6 @@
     <Compile Include="AdminCommands.cs" />
     <Compile Include="BlackJack.cs" />
     <Compile Include="CommandModule.cs" />
-    <Compile Include="GameCommands.cs" />
     <Compile Include="Games.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GunzCommands.cs" />
