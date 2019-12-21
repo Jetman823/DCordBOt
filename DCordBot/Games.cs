@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 public struct GameInfo
@@ -18,8 +15,6 @@ namespace DCordBot
 
         public bool Load()
         {
-
-
             XmlDocument doc = new XmlDocument();
             try
             {
@@ -34,9 +29,9 @@ namespace DCordBot
             games = new List<GameInfo>();
 
             XmlNode rootNode = doc.DocumentElement;
-            foreach(XmlNode childNode in rootNode)
+            foreach (XmlNode childNode in rootNode)
             {
-                if(childNode.Name == "GAME")
+                if (childNode.Name == "GAME")
                 {
                     GameInfo game = new GameInfo
                     {

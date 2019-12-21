@@ -1,10 +1,9 @@
-﻿using Discord;
-using Discord.WebSocket;
+﻿using Discord.WebSocket;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Data.Sql;
+
 public struct CharInfo
 {
     public int Level;
@@ -21,8 +20,6 @@ namespace DCordBot
     {
         public override async Task Response(SocketMessage message, CommandInfo command)
         {
-            ///TODO: determine best way to do this
-            ///
             string commandName = command.commandName;
             switch (commandName.ToLower())
             {
@@ -45,7 +42,7 @@ namespace DCordBot
                         int argc = message.Content.Count(count => count == ' ');
                         if (argc < command.argc)
                             return;
-                        if(!message.Content.Contains("\""))
+                        if (!message.Content.Contains("\""))
                         {
                             await message.Channel.SendMessageAsync("Please put quotes around the item name!");
                             return;
@@ -117,11 +114,8 @@ namespace DCordBot
             reader.Close();
             command.Dispose();
 
-            EmbedBuilder embed = new EmbedBuilder
-            {
-                Color = Color.Red,
-                Title = "Character Information:\n"
-            };
+            Embedder embedder = new Embedder();
+            embedder.SetTitle("Character Information:\n");
 
             string response = "Clan Name: " + charInfo.clanName + "\n" + "Level: " + charInfo.Level + "\n" + "XP: " + charInfo.XP + "\n" + "BP: " + charInfo.BP + "\n" +
                 "KillCount: " + charInfo.killCount + "\n" + "DeathCount: " + charInfo.deathCount + "\n" + "Sex: ";
@@ -130,10 +124,10 @@ namespace DCordBot
             else
                 response += "Female";
 
-            embed.WithDescription(response);
+            embedder.SetDescription(response);
 
 
-            await message.Channel.SendMessageAsync("", false, embed.Build());
+            await message.Channel.SendMessageAsync("", false, embedder.Build());
         }
 
         private async Task ResponseServerStatus(SocketMessage message)
@@ -182,19 +176,15 @@ namespace DCordBot
 
                     itemInfo = item;
 
-                    var embed = new EmbedBuilder
-                    {
-                        Color = Color.Red,
-                        Title = "Item Information:\n"
-                    };
-
                     string response = "Name: " + item.name + "\n" + "Desc: " + item.desc + "\n" + "Type: " + itemInfo.type + "\n" + "Slot: " + itemInfo.slot + "\n" + "Delay: " + itemInfo.delay + "\n" +
                         "Damage: " + itemInfo.damage + "\n";
 
-                    embed.WithDescription(response);
+                    Embedder embedder = new Embedder();
+                    embedder.SetTitle("Item Information:\n");
+                    embedder.SetDescription(response);
 
 
-                    await message.Channel.SendMessageAsync("",false,embed.Build());
+                    await message.Channel.SendMessageAsync("", false, embedder.Build());
 
                 }
             }

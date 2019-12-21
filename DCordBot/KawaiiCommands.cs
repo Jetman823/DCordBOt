@@ -1,5 +1,4 @@
-﻿using Discord;
-using Discord.WebSocket;
+﻿using Discord.WebSocket;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -59,19 +58,14 @@ namespace DCordBot
                 response += " " + user.Username;
             }
             response += "!";
-            var embed = new EmbedBuilder
-            {
-                Color = Color.Red,
-                Title = response
-            };
             Random random = new Random();
             List<Image> image = kawaiiImages.Images.FindAll(x => x._type == command.kawaiiType);
             int index = random.Next(0, image.Count);
-            embed.WithImageUrl(image[index]._filePath);
-            await message.Channel.SendMessageAsync("", false, embed.Build());
 
-            var socketGuild = message.Channel as SocketGuild;
-            Console.Write(socketGuild.Id);
+            Embedder embedder = new Embedder();
+            embedder.SetTitle(response);
+            embedder.AddImageUrl(image[index]._filePath);
+            await message.Channel.SendMessageAsync("", false, embedder.Build());
         }
     }
 }

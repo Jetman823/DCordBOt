@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCordBot", "DCordBot\DCordBot.csproj", "{A5720EEB-C252-45DB-9E08-E26F5D58C180}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5720EEB-C252-45DB-9E08-E26F5D58C180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5720EEB-C252-45DB-9E08-E26F5D58C180}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5720EEB-C252-45DB-9E08-E26F5D58C180}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5720EEB-C252-45DB-9E08-E26F5D58C180}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C8E6E25E-2F43-4570-9BD9-1308C77E0A16}
+	EndGlobalSection
+EndGlobal

@@ -44,13 +44,10 @@ namespace DCordBot
             int RandomImage = random.Next(0, NFSW.yandImages.Count);
             ImageData randImage = NFSW.yandImages.ElementAt(RandomImage);
 
-            var embed = new EmbedBuilder
-            {
-                Color = Color.Red
-            };
-            embed.WithImageUrl(randImage.file_url);
+            Embedder embedder = new Embedder();
+            embedder.AddImageUrl(randImage.file_url);
 
-            await message.Channel.SendMessageAsync("", false, embed.Build());
+            await message.Channel.SendMessageAsync("", false, embedder.Build());
 
         }
 
@@ -62,17 +59,15 @@ namespace DCordBot
                 await message.Channel.SendMessageAsync("This only works if the channel is NSFW!");
                 return;
             }
-
-            var embed = new EmbedBuilder
-            {
-                Color = Color.Red
-            };
+            
             Random random = new Random();
             int RandomImage = random.Next(0, NFSW.gelBorImages.Count);
             ImageData randImage = NFSW.gelBorImages.ElementAt(RandomImage);
-            embed.WithImageUrl(randImage.file_url);
 
-            await message.Channel.SendMessageAsync("", false, embed.Build());
+            Embedder embedder = new Embedder();
+            embedder.AddImageUrl(randImage.file_url);
+
+            await message.Channel.SendMessageAsync("", false, embedder.Build());
         }
 
         private async Task ResponseDanBooru(SocketMessage message)
@@ -84,16 +79,14 @@ namespace DCordBot
                 return;
             }
 
-            var embed = new EmbedBuilder
-            {
-                Color = Color.Red
-            };
             Random random = new Random();
             int RandomImage = random.Next(0, NFSW.danBorImages.Count);
             ImageData randImage = NFSW.danBorImages.ElementAt(RandomImage);
-            embed.WithImageUrl(randImage.file_url);
 
-            await message.Channel.SendMessageAsync("", false, embed.Build());
+            Embedder embedder = new Embedder();
+            embedder.AddImageUrl(randImage.file_url);
+
+            await message.Channel.SendMessageAsync("", false, embedder.Build());
         }
     }
 }

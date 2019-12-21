@@ -1,12 +1,8 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.IO;
-using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
-using System.Xml;
 
 
 
@@ -103,35 +99,27 @@ namespace DCordBot
                 }
             }
         }
-
-        /// <summary>
-        /// Need to write this
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
+        
         private async Task UserJoined(SocketGuildUser user)
         {
             ITextChannel channel = user.Guild.DefaultChannel;
-            var embed = new EmbedBuilder
-            {
-                ImageUrl = "https://uploads.disquscdn.com/images/4df0100942caa8c7688300d788f69fbe905d041d1969fe51b9442caca6f88be8.gif",
-                Color = Color.Red,
-                Description = $"{user.Username} has joined the server!"
-            };
-            await channel.SendMessageAsync("", false, embed.Build());
+            Embedder embedder = new Embedder();
+            embedder.AddImageUrl("https://uploads.disquscdn.com/images/4df0100942caa8c7688300d788f69fbe905d041d1969fe51b9442caca6f88be8.gif");
+            embedder.SetDescription($"{user.Username} has joined the server!");
+            embedder.AddThumbNailUrl(user.GetAvatarUrl());
+
+            await channel.SendMessageAsync("", false, embedder.Build());
         }
 
         private async Task UserLeft(SocketGuildUser user)
         {
             ITextChannel channel = user.Guild.DefaultChannel;
-            var embed = new EmbedBuilder
-            {
-                ImageUrl = "http://pa1.narvii.com/5994/b140573f8431754feb055d6e592321cc13b53b14_00.gif",
-                Color = Color.Red,
-                Description = $"{user.Username} has left us!"
-            };
+            Embedder embedder = new Embedder();
+            embedder.AddImageUrl("http://pa1.narvii.com/5994/b140573f8431754feb055d6e592321cc13b53b14_00.gif");
+            embedder.SetDescription($"{user.Username} has left us!");
+            embedder.AddThumbNailUrl(user.GetAvatarUrl());
 
-            await channel.SendMessageAsync("", false, embed.Build());
+            await channel.SendMessageAsync("", false, embedder.Build());
         }
     }
 }

@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.Serialization;
-using System.Windows;
+﻿using System.Collections.Generic;
 using System.Json;
 using Newtonsoft.Json;
-using System.IO;
-using Newtonsoft.Json.Linq;
 
 public struct ImageData
 {
@@ -49,7 +41,7 @@ namespace DCordBot
             {
                 var json = webclient.DownloadString("https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags=");
 
-                    JsonArray obj = new JsonArray(json);
+                JsonArray obj = new JsonArray(json);
 
                 dynamic array = JsonConvert.DeserializeObject<List<ImageData>>(json);
                 foreach (var item in array)
@@ -66,14 +58,14 @@ namespace DCordBot
                 JsonArray obj = new JsonArray(json);
                 dynamic array = JsonConvert.DeserializeObject<List<ImageData>>(json);
 
-                foreach(var item in array)
+                foreach (var item in array)
                 {
                     ImageData data = new ImageData();
                     data = item;
                     danBorImages.Add(data);
                 }
             }
-                return true;
+            return true;
         }
     }
 }
