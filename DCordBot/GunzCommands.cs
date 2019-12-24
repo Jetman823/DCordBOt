@@ -16,44 +16,9 @@ public struct CharInfo
 
 namespace DCordBot
 {
-    class GunzCommands : CommandModule
+    class GunzCommands : CommandHandler
     {
-        public override async Task Response(SocketMessage message, CommandInfo command)
-        {
-            string commandName = command.commandName;
-            switch (commandName.ToLower())
-            {
-                case "!charinfo":
-                    {
-                        int argc = message.Content.Count(count => count == ' ');
-                        if (argc < command.argc || argc > command.argc)
-                            return;
-
-                        await ResponseCharInfo(message, message.Content.Substring(10));
-                    }
-                    break;
-                case "!serverstatus":
-                    {
-                        await ResponseServerStatus(message);
-                    }
-                    break;
-                case "!getitem":
-                    {
-                        int argc = message.Content.Count(count => count == ' ');
-                        if (argc < command.argc)
-                            return;
-                        if (!message.Content.Contains("\""))
-                        {
-                            await message.Channel.SendMessageAsync("Please put quotes around the item name!");
-                            return;
-                        }
-                        await ResponseItemInfo(message, message.Content.Substring(9));
-                    }
-                    break;
-                default:
-                    return;
-            }
-        }
+#if GUNZ
         private async Task ResponseCharInfo(SocketMessage message, string charName)
         {
             Console.Write(charName);
@@ -192,5 +157,7 @@ namespace DCordBot
             await message.Channel.SendMessageAsync("Item not found!");
         }
 
+    }
+#endif
     }
 }

@@ -5,20 +5,21 @@ using System.Threading.Tasks;
 
 namespace DCordBot
 {
-    class SqlBuilder
+    class SqlBuilder : IDisposable
     {
         SqlCommand sqlCommand = null;
-        public SqlBuilder(SqlCommand command)
+        public SqlBuilder(string commandName,CommandType commandType)
         {
-            sqlCommand = command;
+            sqlCommand = new SqlCommand(commandName, Program.botConnection);
+            sqlCommand.CommandType = commandType;
         }
         
-        public void AddParameter(SqlParameter param)
+        private void AddParameter(SqlParameter param)
         {
             sqlCommand.Parameters.Add(param);
         }
 
-        public void AddParameter(string paramName, SqlDbType sqlDbType, long value, ParameterDirection direction = ParameterDirection.Input)
+        public void AddParameter<T>(string paramName, SqlDbType sqlDbType, T value, ParameterDirection direction = ParameterDirection.Input)
         {
             SqlParameter parameter = new SqlParameter(paramName, value);
             parameter.SqlDbType = sqlDbType;
@@ -28,34 +29,28 @@ namespace DCordBot
 
         public async Task<long> ExecuteStoredProcedure()
         {
-            if (sqlCommand.CommandType != CommandType.StoredProcedure)
-                return -1;
-            SqlDataReader reader = null;
-            try
-            {
-               reader =  await sqlCommand.ExecuteReaderAsync();
-            }
-            catch(Exception e)
-            {
-                Console.Write(e.Message);
-            }
-            long result = 0;
-            try
-            {
-                while (reader.Read())
-                {
-                    result = reader.GetInt64(0);
-                }
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e.Message);
-                result = -1;
-                reader.Close();
-                return result;
-            }
-            reader.Close();
+            return 0;
+        }
+
+        public  async Task<int> ExecuteNonQueryAsync()
+        {
+            int result =  await sqlCommand.ExecuteNonQueryAsync();
             return result;
+        }
+
+        public long GetReturnValue(string returnParamname)
+        {
+            return Convert.ToInt64(sqlCommand.Parameters[returnParamname].Value);
+        }
+
+        public object GetParameter(string name)
+        {
+            return sqlCommand.Parameters[name].Value;
+        }
+
+        public void Dispose()
+        {
+            sqlCommand.Dispose();
         }
     }
 }

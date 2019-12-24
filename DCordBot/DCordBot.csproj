@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
@@ -133,7 +133,9 @@
   <ItemGroup>
     <Compile Include="AdminCommands.cs" />
     <Compile Include="BlackJack.cs" />
-    <Compile Include="CommandModule.cs" />
+    <Compile Include="CommandHandler.cs" />
+    <Compile Include="CustomCommandContext.cs" />
+    <Compile Include="CustomPrecondition.cs" />
     <Compile Include="Embedder.cs" />
     <Compile Include="Games.cs" />
     <Compile Include="GlobalSuppressions.cs" />

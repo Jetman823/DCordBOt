@@ -41,7 +41,7 @@ struct BJPlayers
 
 namespace DCordBot
 {
-    class BlackJack : CommandModule
+    class BlackJack : CommandHandler
     {
         SortedDictionary<string, BJPlayers> bjPlayers = new SortedDictionary<string, BJPlayers>();
 
@@ -68,41 +68,41 @@ namespace DCordBot
                 }
             }
         }
-        public override async Task Response(SocketMessage message, CommandInfo command)
-        {
-            switch (command.commandName.ToLower())
-            {
-                case "!bjnew":
-                    {
-                        await ResponseBjNew(message, message.Author);
-                    }
-                    break;
-                case "!bjhit":
-                    {
-                        await ResponseBjHit(message, message.Author);
-                    }
-                    break;
-                case "!bjstay":
-                    {
-                        //await ResponseGelBooru(message);
-                    }
-                    break;
-                case "!bjwin":
-                    {
-                        await ResponseBjWin(message, message.Author);
-                    }
-                    break;
-                case "!bjlose":
-                    {
-                        await ResponseBjLose(message, message.Author);
-                    }
-                    break;
-                default:
-                    {
-                        return;
-                    }
-            }
-        }
+        //public override async Task Response(SocketMessage message, CommandInfo command)
+        //{
+        //    switch (command.commandName.ToLower())
+        //    {
+        //        case "!bjnew":
+        //            {
+        //                await ResponseBjNew(message, message.Author);
+        //            }
+        //            break;
+        //        case "!bjhit":
+        //            {
+        //                await ResponseBjHit(message, message.Author);
+        //            }
+        //            break;
+        //        case "!bjstay":
+        //            {
+        //                //await ResponseGelBooru(message);
+        //            }
+        //            break;
+        //        case "!bjwin":
+        //            {
+        //                await ResponseBjWin(message, message.Author);
+        //            }
+        //            break;
+        //        case "!bjlose":
+        //            {
+        //                await ResponseBjLose(message, message.Author);
+        //            }
+        //            break;
+        //        default:
+        //            {
+        //                return;
+        //            }
+        //    }
+        //}
 
         //TODO: finish this
         private async Task ResponseBjNew(SocketMessage message, SocketUser sender)

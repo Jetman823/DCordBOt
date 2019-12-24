@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ public class ImageList
 
 namespace DCordBot
 {
-    class KawaiiCommands : CommandModule
+    public class KawaiiCommands : CommandHandler
     {
         private static ImageList kawaiiImages;
 
@@ -36,36 +37,110 @@ namespace DCordBot
             }
             return;
         }
-        override public async Task Response(SocketMessage message, CommandInfo command)
+
+        [Command("hug")]
+        public async Task ResponseHug([Remainder]string players)
         {
-            if(command.commandType == 3)
-            {
-                await ResponseKawaii(message,command);
-            }
-            return;
-        }
-
-        private async Task ResponseKawaii(SocketMessage message,CommandInfo command)
-        {               
-            if (message.MentionedUsers.Count < 1)
-                return;
-
-            string response = command.desc;
-            response = response.Replace("$1", message.Author.Username);
-
-            foreach (SocketUser user in message.MentionedUsers)
+            var targets = Context.Message.MentionedUsers;
+            string response = $"{Context.Message.Author.Username} hugged ";
+            foreach (SocketUser user in targets)
             {
                 response += " " + user.Username;
             }
             response += "!";
-            Random random = new Random();
-            List<Image> image = kawaiiImages.Images.FindAll(x => x._type == command.kawaiiType);
-            int index = random.Next(0, image.Count);
 
+            Random random = new Random();
+            List<Image> images = await GetkawaiiImages(0);
+            int index = random.Next(0, images.Count);
             Embedder embedder = new Embedder();
             embedder.SetTitle(response);
-            embedder.AddImageUrl(image[index]._filePath);
-            await message.Channel.SendMessageAsync("", false, embedder.Build());
+            embedder.AddImageUrl(images[index]._filePath);
+            await Context.Message.Channel.SendMessageAsync("", false, embedder.Build());
+        }
+
+        [Command("kiss")]
+        public async Task ResponseKiss([Remainder]string players)
+        {
+            var targets = Context.Message.MentionedUsers;
+            string response = $"{Context.Message.Author.Username} kissed ";
+            foreach (SocketUser user in targets)
+            {
+                response += " " + user.Username;
+            }
+            response += "!";
+
+            Random random = new Random();
+            List<Image> images = await GetkawaiiImages(1);
+            int index = random.Next(0, images.Count);
+            Embedder embedder = new Embedder();
+            embedder.SetTitle(response);
+            embedder.AddImageUrl(images[index]._filePath);
+            await Context.Message.Channel.SendMessageAsync("", false, embedder.Build());
+        }
+
+        [Command("lick")]
+        public async Task ResponseLick([Remainder]string players)
+        {
+            var targets = Context.Message.MentionedUsers;
+            string response = $"{Context.Message.Author.Username} licked ";
+            foreach (SocketUser user in targets)
+            {
+                response += " " + user.Username;
+            }
+            response += "!";
+
+            Random random = new Random();
+            List<Image> images = await GetkawaiiImages(2);
+            int index = random.Next(0, images.Count);
+            Embedder embedder = new Embedder();
+            embedder.SetTitle(response);
+            embedder.AddImageUrl(images[index]._filePath);
+            await Context.Message.Channel.SendMessageAsync("", false, embedder.Build());
+        }
+
+        [Command("slap")]
+        public async Task ResponseSlap([Remainder]string players)
+        {
+            var targets = Context.Message.MentionedUsers;
+            string response = $"{Context.Message.Author.Username} slapped ";
+            foreach (SocketUser user in targets)
+            {
+                response += " " + user.Username;
+            }
+            response += "!";
+
+            Random random = new Random();
+            List<Image> images = await GetkawaiiImages(3);
+            int index = random.Next(0, images.Count);
+            Embedder embedder = new Embedder();
+            embedder.SetTitle(response);
+            embedder.AddImageUrl(images[index]._filePath);
+            await Context.Message.Channel.SendMessageAsync("", false, embedder.Build());
+        }
+
+        [Command("glare")]
+        public async Task ResponseGlare([Remainder]string players)
+        {
+            var targets = Context.Message.MentionedUsers;
+            string response = $"{Context.Message.Author.Username} glared at ";
+            foreach (SocketUser user in targets)
+            {
+                response += " " + user.Username;
+            }
+            response += "!";
+
+            Random random = new Random();
+            List<Image> images = await GetkawaiiImages(4);
+            int index = random.Next(0, images.Count);
+            Embedder embedder = new Embedder();
+            embedder.SetTitle(response);
+            embedder.AddImageUrl(images[index]._filePath);
+            await Context.Message.Channel.SendMessageAsync("", false, embedder.Build());
+        }
+
+        public Task<List<Image>> GetkawaiiImages(int imageType)
+        {
+            return Task.Run(()=> kawaiiImages.Images.FindAll(x => x._type == imageType));
         }
     }
 }

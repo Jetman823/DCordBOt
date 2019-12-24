@@ -1,65 +1,57 @@
-﻿using Discord;
+﻿using Discord.Commands;
 using Discord.WebSocket;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DCordBot
 {
-    class NSFWCommands : CommandModule
+    public class NSFWCommands : CommandHandler
     {
-        public override async Task Response(SocketMessage message,CommandInfo command)
+        [Command("yandere")]
+        [Summary("!yandere <tagstoearch> add a space between each tag")]
+        [RequireNsfw]
+        public async Task ResponseYandere([Remainder] string tags)
         {
-            switch(command.commandName.ToLower())
-            {
-                case "!yandere":
-                    {
-                        await ResponseYandere(message);
-                    }
-                    break;
-                case "!gelbooru":
-                    {
-                        await ResponseGelBooru(message);
-                    }
-                    break;
-                case "!danbooru":
-                    {
-                        await ResponseDanBooru(message);
-                    }break;
-                default:
-                    return;
-            }
-        }
-
-        private async Task ResponseYandere(SocketMessage message)
-        {
-            ITextChannel textChannel = (ITextChannel)message.Channel;
-            if (!((ITextChannel)message.Channel).IsNsfw)
-            {
-                await message.Channel.SendMessageAsync("This only works if the channel is NSFW!");
-                return;
-            }
-
+            ISocketMessageChannel channel = Context.Message.Channel;
+            List<ImageData> images = null;
             Random random = new Random();
-            int RandomImage = random.Next(0, NFSW.yandImages.Count);
-            ImageData randImage = NFSW.yandImages.ElementAt(RandomImage);
+            ImageData? randImage = null;
+            if (tags.Length > 0)
+            {
+
+
+                images = NFSW.yandImages.FindAll(x => x.Tags.All(tags.Contains));
+                if (images.Count == 0)
+                {
+                    await channel.SendMessageAsync("sorry, couldn't find an image with those tags");
+                }
+                int RandomImage = random.Next(0, images.Count());
+                randImage = NFSW.yandImages.ElementAt(RandomImage);
+            }
+            else
+            {
+                int RandomImage = random.Next(0, NFSW.yandImages.Count);
+                randImage = NFSW.yandImages.ElementAt(RandomImage);
+            }
+
+            if (randImage == null)
+                return;
 
             Embedder embedder = new Embedder();
-            embedder.AddImageUrl(randImage.file_url);
+            embedder.AddImageUrl(randImage?.file_url);
 
-            await message.Channel.SendMessageAsync("", false, embedder.Build());
+            await channel.SendMessageAsync("", false, embedder.Build());
 
         }
 
-        private async Task ResponseGelBooru(SocketMessage message)
+        [Command("gelbooru")]
+        [RequireNsfw]
+        private async Task ResponseGelBooru()
         {
-            ITextChannel textChannel = (ITextChannel)message.Channel;
-            if (!((ITextChannel)message.Channel).IsNsfw)
-            {
-                await message.Channel.SendMessageAsync("This only works if the channel is NSFW!");
-                return;
-            }
-            
+            ISocketMessageChannel channel = Context.Message.Channel;
+
             Random random = new Random();
             int RandomImage = random.Next(0, NFSW.gelBorImages.Count);
             ImageData randImage = NFSW.gelBorImages.ElementAt(RandomImage);
@@ -67,17 +59,14 @@ namespace DCordBot
             Embedder embedder = new Embedder();
             embedder.AddImageUrl(randImage.file_url);
 
-            await message.Channel.SendMessageAsync("", false, embedder.Build());
+            await channel.SendMessageAsync("", false, embedder.Build());
         }
 
-        private async Task ResponseDanBooru(SocketMessage message)
+        [Command("danbooru")]
+        [RequireNsfw]
+        private async Task ResponseDanBooru()
         {
-            ITextChannel textChannel = (ITextChannel)message.Channel;
-            if (!((ITextChannel)message.Channel).IsNsfw)
-            {
-                await message.Channel.SendMessageAsync("This only works if the channel is NSFW!");
-                return;
-            }
+            ISocketMessageChannel channel = Context.Message.Channel;
 
             Random random = new Random();
             int RandomImage = random.Next(0, NFSW.danBorImages.Count);
@@ -86,7 +75,7 @@ namespace DCordBot
             Embedder embedder = new Embedder();
             embedder.AddImageUrl(randImage.file_url);
 
-            await message.Channel.SendMessageAsync("", false, embedder.Build());
+            await channel.SendMessageAsync("", false, embedder.Build());
         }
     }
 }

@@ -4,12 +4,10 @@ using Newtonsoft.Json;
 
 public struct ImageData
 {
-    [JsonProperty("source")]
-#pragma warning disable IDE1006 // Naming Styles
-    public string source { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
     [JsonProperty("file_url")]
     public string file_url { get; set; }
+    [JsonProperty("tags")]
+    public string Tags { get; set; }
 }
 
 namespace DCordBot
