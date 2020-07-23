@@ -6,8 +6,7 @@ using System;
 using System.Data.SqlClient;
 using System.Reflection;
 using System.Threading.Tasks;
-
-
+using Victoria;
 
 namespace DCordBot
 {
@@ -27,7 +26,7 @@ namespace DCordBot
         public Program()
         {
 #if GUNZ
-            connection = new SqlConnection(@"Server=WIN-IUIQ9BTIQRM\SQLEXPRESS;Database=GunzDB2;Trusted_Connection=Yes;");
+            connection = new SqlConnection(@"Server=DESKTOP-TMJAO33\SQLEXPRESS;Database=GunZDB15;Trusted_Connection=Yes;");
             try
             {
                 connection.Open();
@@ -37,7 +36,7 @@ namespace DCordBot
                 Console.Write(exception.Message);
             }
 #endif
-            botConnection = new SqlConnection(@"Server=DESKTOP-AR9BK07;Database=DCordBot;Trusted_Connection=Yes;");
+            botConnection = new SqlConnection(@"Server=DESKTOP-TMJAO33\SQLEXPRESS;Database=DCordBot;Trusted_Connection=Yes;");
             try
             {
                 botConnection.Open();
@@ -76,11 +75,11 @@ namespace DCordBot
                 .AddSingleton(client)
                 .AddSingleton(commands)
                 .BuildServiceProvider();
-
             await RegisterCommandsAsync();
 
             await client.LoginAsync(Discord.TokenType.Bot, "NDM2Njg2NjAzMzk4OTM4NjQ0.XfQO1g.bf5lego0eEexHKHFKygYEfFmRJc", true);
             await client.StartAsync();
+
             await Task.Delay(-1);
 
         }
@@ -100,7 +99,7 @@ namespace DCordBot
             if(result.IsSuccess == false)
             {
                 string response = $"Here's how to use {command.Value.Name}\n";
-                response += command.Value.Summary;
+                response += result.ErrorReason;
 
                 await context.Channel.SendMessageAsync(response);
             }
@@ -131,7 +130,7 @@ namespace DCordBot
                 return;
 
             int argPos = 0;
-            if (userMessage.HasStringPrefix(">", ref argPos) ||
+            if (userMessage.HasStringPrefix("!", ref argPos) ||
                 userMessage.HasMentionPrefix(client.CurrentUser, ref argPos))
             { 
                 context = new SocketCommandContext(client, message as SocketUserMessage);

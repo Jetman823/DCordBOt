@@ -24,10 +24,5 @@ namespace DCordBot
             }
             await Discord.UserExtensions.SendMessageAsync(Context.Message.Author, message);
         }
-        [Command("define")]
-        public async Task DefineAsync([Remainder]string command)
-        {
-            return;
-        }
     }
 }

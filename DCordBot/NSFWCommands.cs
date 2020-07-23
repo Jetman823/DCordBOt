@@ -12,17 +12,21 @@ namespace DCordBot
         [Command("yandere")]
         [Summary("!yandere <tagstoearch> add a space between each tag")]
         [RequireNsfw]
-        public async Task ResponseYandere([Remainder] string tags)
+        public async Task ResponseYandere([Remainder] string tags = "")
         {
             ISocketMessageChannel channel = Context.Message.Channel;
-            List<ImageData> images = null;
+            List<ImageData> images = new List<ImageData>();
             Random random = new Random();
             ImageData? randImage = null;
             if (tags.Length > 0)
             {
+                foreach(ImageData image in NFSW.yandImages)
+                {
+                    bool result = Extensions.Anyof(image.Tags, tags);
+                    if (result == true)
+                        images.Add(image);
+                }
 
-
-                images = NFSW.yandImages.FindAll(x => x.Tags.All(tags.Contains));
                 if (images.Count == 0)
                 {
                     await channel.SendMessageAsync("sorry, couldn't find an image with those tags");
@@ -48,32 +52,82 @@ namespace DCordBot
 
         [Command("gelbooru")]
         [RequireNsfw]
-        private async Task ResponseGelBooru()
+        private async Task ResponseGelBooru([Remainder]string tags = "")
         {
             ISocketMessageChannel channel = Context.Message.Channel;
-
+            List<ImageData> images = new List<ImageData>();
             Random random = new Random();
-            int RandomImage = random.Next(0, NFSW.gelBorImages.Count);
-            ImageData randImage = NFSW.gelBorImages.ElementAt(RandomImage);
+            ImageData? randImage = null;
+            if (tags.Length > 0)
+            {
+
+
+                foreach (ImageData image in NFSW.gelBorImages)
+                {
+                    bool result = Extensions.Anyof(image.Tags, tags);
+                    if (result == true)
+                        images.Add(image);
+                }
+
+                if (images.Count == 0)
+                {
+                    await channel.SendMessageAsync("sorry, couldn't find an image with those tags");
+                }
+                int RandomImage = random.Next(0, images.Count());
+                randImage = NFSW.gelBorImages.ElementAt(RandomImage);
+            }
+            else
+            {
+                int RandomImage = random.Next(0, NFSW.gelBorImages.Count);
+                randImage = NFSW.gelBorImages.ElementAt(RandomImage);
+            }
+
+            if (randImage == null)
+                return;
 
             Embedder embedder = new Embedder();
-            embedder.AddImageUrl(randImage.file_url);
+            embedder.AddImageUrl(randImage?.file_url);
 
             await channel.SendMessageAsync("", false, embedder.Build());
         }
 
         [Command("danbooru")]
         [RequireNsfw]
-        private async Task ResponseDanBooru()
+        private async Task ResponseDanBooru([Remainder] string tags = "")
         {
             ISocketMessageChannel channel = Context.Message.Channel;
-
+            List<ImageData> images = new List<ImageData>();
             Random random = new Random();
-            int RandomImage = random.Next(0, NFSW.danBorImages.Count);
-            ImageData randImage = NFSW.danBorImages.ElementAt(RandomImage);
+            ImageData? randImage = null;
+            if (tags.Length > 0)
+            {
+
+
+                foreach (ImageData image in NFSW.danBorImages)
+                {
+                    bool result = Extensions.Anyof(image.Tags, tags);
+                    if (result == true)
+                        images.Add(image);
+                }
+
+                if (images.Count == 0)
+                {
+                    await channel.SendMessageAsync("sorry, couldn't find an image with those tags");
+                }
+                int RandomImage = random.Next(0, images.Count());
+                randImage = NFSW.danBorImages.ElementAt(RandomImage);
+            }
+            else
+            {
+                int RandomImage = random.Next(0, NFSW.danBorImages.Count);
+                randImage = NFSW.danBorImages.ElementAt(RandomImage);
+            }
+
+            if (randImage == null)
+                return;
 
             Embedder embedder = new Embedder();
-            embedder.AddImageUrl(randImage.file_url);
+            embedder.AddImageUrl(randImage?.file_url);
 
             await channel.SendMessageAsync("", false, embedder.Build());
         }

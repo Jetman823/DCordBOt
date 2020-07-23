@@ -27,20 +27,21 @@ namespace DCordBot
             AddParameter(parameter);
         }
 
-        public async Task<long> ExecuteStoredProcedure()
+        public  async Task<long> ExecuteNonQueryAsync()
         {
-            return 0;
+            long result =  Convert.ToInt64(await sqlCommand.ExecuteNonQueryAsync());
+            return result;
         }
 
-        public  async Task<int> ExecuteNonQueryAsync()
+        public async Task<SqlDataReader> ExecuteReader()
         {
-            int result =  await sqlCommand.ExecuteNonQueryAsync();
-            return result;
+            return await sqlCommand.ExecuteReaderAsync();
         }
 
         public long GetReturnValue(string returnParamname)
         {
-            return Convert.ToInt64(sqlCommand.Parameters[returnParamname].Value);
+            long val = Convert.ToInt64(sqlCommand.Parameters[returnParamname].Value);
+            return val;
         }
 
         public object GetParameter(string name)

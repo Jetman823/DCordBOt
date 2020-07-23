@@ -2,16 +2,25 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using static DCordBot.CustomPreconditions;
 
 /// <summary>
 /// I know I can simplify it, don't want to bitch. I don't want to add brackets for 2 or 3 variables....
 /// </summary>
 #pragma warning disable IDE0017
 #pragma warning disable IDE0011
+
+public struct marriageQuery
+{
+    public ulong user1;
+    public ulong user2;
+}
 
 public struct CurrentProposals
 {
@@ -43,32 +52,37 @@ namespace DCordBot
             }
 
             SqlBuilder builder = new SqlBuilder("spCheckUserMarriageStatus", CommandType.StoredProcedure);
+            builder.AddParameter("@SENDER", SqlDbType.BigInt, Convert.ToInt64(message.Author.Id));
             builder.AddParameter("@TARGET", SqlDbType.BigInt, Convert.ToInt64(userToSearch.Id));
             builder.AddParameter("@ServerID", SqlDbType.BigInt, Convert.ToInt64(message.Channel.Id));
-            builder.AddParameter("@RESULT", SqlDbType.BigInt, 0, ParameterDirection.ReturnValue);
-            await builder.ExecuteNonQueryAsync();
-
-            long result = builder.GetReturnValue("@RESULT");
-            if (result == 0)
+            using (var reader = await builder.ExecuteReader())
             {
-                await message.Channel.SendMessageAsync(userToSearch.Username + " Is not Married!");
-                return;
+                try
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        marriageQuery marriage = new marriageQuery();
+                        marriage.user1 = Convert.ToUInt64(reader["User1"]);
+                        marriage.user2 = Convert.ToUInt64(reader["User2"]);
+                        IUser user1 = await message.Channel.GetUserAsync(marriage.user1);
+                        IUser user2 = await message.Channel.GetUserAsync(marriage.user2);
+
+                        await message.Channel.SendMessageAsync(user1.Username + " is married to " + user2.Username);
+                        return;
+                    }
+                    await message.Channel.SendMessageAsync(userToSearch.Username + " is not married");
+                    return;
+                }
+                catch(Exception e)
+                {
+                    await message.Channel.SendMessageAsync(e.Message);
+                }
             }
-
-            IUser user = await message.Channel.GetUserAsync(Convert.ToUInt64(result));
-            if (user == null)
-                return;
-
-            if (Convert.ToUInt64(builder.GetParameter("@TARGET")) == message.Author.Id)
-                await message.Channel.SendMessageAsync("You are married to " + user.Username);
-
-            else
-                await message.Channel.SendMessageAsync(userToSearch.Username + " is married to " + user.Username);
-
         }
 
         [Command("propose")]
         [Summary("!propose <mention>")]
+        [CheckMarriageStatus]
         public async Task ResponseProposal([Remainder] string name)
         {
             SocketMessage message = Context.Message;
@@ -92,36 +106,6 @@ namespace DCordBot
                 await message.Channel.SendMessageAsync("You've already proposed to this person! Hold your horses stud, let them respond!");
                 return;
             }
-
-            SqlBuilder builder = new SqlBuilder("spProposeToUser", CommandType.StoredProcedure);
-            builder.AddParameter("@Sender", SqlDbType.BigInt, Convert.ToInt64(sender.Id));
-            builder.AddParameter("@Target", SqlDbType.BigInt, Convert.ToInt64(targetUser.Id));
-            builder.AddParameter("@ServerID", SqlDbType.BigInt, Convert.ToInt64(((SocketGuildChannel)message.Channel).Id));
-            builder.AddParameter("@RESULT", SqlDbType.TinyInt, 0, ParameterDirection.ReturnValue);
-
-            await builder.ExecuteNonQueryAsync();
-            byte result = Convert.ToByte(builder.GetParameter("@RESULT"));
-
-            Embedder embedder = new Embedder();
-            if (result == 0)
-            {
-                embedder.SetTitle(sender.Username + " Is Proposing to " + targetUser.Username + "!");
-                embedder.SetDescription("to be filled, type !acceptproposal or !rejectproposal");
-                embedder.AddImageUrl("https://i.imgur.com/pVjsPXv.gif");
-
-                await message.Channel.SendMessageAsync("", false, embedder.Build());
-                proposals.Add(newProposal);
-            }
-            else
-            {
-                if (result == 1)
-                    embedder.SetTitle("You're already married! You must divorce your current spouse first.");
-                else if (result == 2)
-                    embedder.SetTitle(targetUser.Username + " is already married!");
-
-
-                await message.Channel.SendMessageAsync("", false, embedder.Build());
-            }
         }
 
         [Command("acceptproposal")]
@@ -143,7 +127,7 @@ namespace DCordBot
             builder.AddParameter("@User2", SqlDbType.BigInt, Convert.ToInt64(sender.Id));
             builder.AddParameter("@ServerID", SqlDbType.BigInt, Convert.ToInt64(channel.Id));
 
-            int result = await builder.ExecuteNonQueryAsync();
+            long result = await builder.ExecuteNonQueryAsync();
             if (result != 0)
             {
 
@@ -193,7 +177,7 @@ namespace DCordBot
             builder.AddParameter("@User1", SqlDbType.BigInt, Convert.ToInt64(sender.Id));
             builder.AddParameter("@User2", SqlDbType.BigInt, Convert.ToInt64(targetUser.Id));
             builder.AddParameter("@ServerID", SqlDbType.BigInt, Convert.ToInt64(channel.Id));
-            int rowsAffected = await builder.ExecuteNonQueryAsync();
+            long rowsAffected = await builder.ExecuteNonQueryAsync();
 
             if (rowsAffected > 0)
             {

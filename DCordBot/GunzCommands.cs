@@ -1,7 +1,6 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
 using System;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
 
 public struct CharInfo
@@ -16,17 +15,19 @@ public struct CharInfo
 
 namespace DCordBot
 {
-    class GunzCommands : CommandHandler
+    public class GunzCommands : CommandHandler
     {
 #if GUNZ
-        private async Task ResponseCharInfo(SocketMessage message, string charName)
+        [Command("charinfo")]
+        [Summary("!charinfo username")]
+        public async Task ResponseCharInfo([Remainder] string charName)
         {
             Console.Write(charName);
             SqlCommand command = Program.connection.CreateCommand();
-            if (charName.Contains("@'|?!=-\""))
+            if (charName.Anyof("@'|?!=-\""))
                 return;
             command.CommandText = @"SELECT [Level],XP,BP ,CID ,KillCount,DeathCount,[Sex] FROM [dbo].[Character] WHERE Name = @NAME";
-            command.Parameters.Add("@NAME", System.Data.SqlDbType.VarChar, 24);
+            command.Parameters.Add("@NAME", System.Data.SqlDbType.VarChar, 24).Value = charName;
 
             CharInfo charInfo = new CharInfo();
 
@@ -92,14 +93,17 @@ namespace DCordBot
             embedder.SetDescription(response);
 
 
-            await message.Channel.SendMessageAsync("", false, embedder.Build());
+            await Context.Channel.SendMessageAsync("", false, embedder.Build());
         }
 
-        private async Task ResponseServerStatus(SocketMessage message)
+        [Command("serverstatus")]
+        [Summary("gets the current online/offline status of the server")]
+        private async Task ResponseServerStatus()
         {
             int playerCount = 0;
+            bool opened = false;
             SqlCommand command = Program.connection.CreateCommand();
-            command.CommandText = @"SELECT [CurrPlayer] FROM [dbo].[ServerStatus](NOLOCK)";
+            command.CommandText = @"SELECT [CurrPlayer],[Opened] FROM [dbo].[ServerStatus](NOLOCK)";
 
             SqlDataReader reader = command.ExecuteReader();
             try
@@ -109,6 +113,7 @@ namespace DCordBot
                     try
                     {
                         playerCount = Convert.ToInt32(reader.GetInt16(0));
+                        opened = Convert.ToBoolean(reader.GetByte(1));
                     }
                     catch (InvalidCastException ex)
                     {
@@ -124,40 +129,47 @@ namespace DCordBot
             reader.Close();
             command.Dispose();
 
-            string response = "The Current PlayerCount is " + playerCount.ToString() + "\n";
-            await message.Channel.SendMessageAsync(response);
+            string response = "The Server is ";
+            if (opened == true)
+                response += "Online";
+            else
+                response += "Offline";
+
+            response += "\nThe Current PlayerCount is " + playerCount.ToString() + "\n";
+
+            Embedder embedder = new Embedder();
+            embedder.SetTitle("Server Status:\n");
+            embedder.SetDescription(response);
+            embedder.AddImageUrl(opened == false ? "https://media.tenor.com/images/a8ef87ef4b9b23c2f59c31418cb01097/tenor.gif" :
+                "https://thumbs.gfycat.com/BlindHonestFirefly.webp");
+
+
+            await Context.Channel.SendMessageAsync("", false, embedder.Build());
         }
 
-        private async Task ResponseItemInfo(SocketMessage message, string itemName)
+        [Command("iteminfo")]
+        [Summary("!iteminfo itemname")]
+        private async Task ResponseItemInfo([Remainder] string itemName)
         {
             itemName = itemName.Replace("\"", "");
             itemName = itemName.ToLower();
-            ZItemInfo itemInfo;
-            foreach (ZItemInfo item in ZItemManager.zItemList)
+            ZItemInfo? item = ZItemManager.zItemList.Find(find => find.name == itemName);
+            if(item != null)
             {
-                string tolowerName = item.name.ToLower();
-                if (tolowerName == itemName)
-                {
+                string response = "Name: " + item.Value.name + "\n" + "Desc: " + item.Value.desc + "\n" + "Type: " + item.Value.type + "\n" + "Slot: " + item.Value.slot + "\n" + "Delay: " + item.Value.delay + "\n" +
+                    "Damage: " + item.Value.damage + "\n";
 
-                    itemInfo = item;
-
-                    string response = "Name: " + item.name + "\n" + "Desc: " + item.desc + "\n" + "Type: " + itemInfo.type + "\n" + "Slot: " + itemInfo.slot + "\n" + "Delay: " + itemInfo.delay + "\n" +
-                        "Damage: " + itemInfo.damage + "\n";
-
-                    Embedder embedder = new Embedder();
-                    embedder.SetTitle("Item Information:\n");
-                    embedder.SetDescription(response);
+                Embedder embedder = new Embedder();
+                embedder.SetTitle("Item Information:\n");
+                embedder.SetDescription(response);
 
 
-                    await message.Channel.SendMessageAsync("", false, embedder.Build());
-
-                }
+                await Context.Channel.SendMessageAsync("", false, embedder.Build());
+                return;
             }
-
-            await message.Channel.SendMessageAsync("Item not found!");
+            await Context.Channel.SendMessageAsync("Item not found!");
         }
 
     }
 #endif
-    }
 }
