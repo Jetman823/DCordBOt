@@ -6,12 +6,13 @@ using System;
 using System.Data.SqlClient;
 using System.Reflection;
 using System.Threading.Tasks;
-using Victoria;
+using Lavalink4NET;
 
 namespace DCordBot
 {
     class Program
     {
+        public static LavalinkNode audioService = null;
         public static CommandService commands = null;
         private IServiceProvider services = null;
         public static SocketCommandContext context = null;
@@ -41,7 +42,7 @@ namespace DCordBot
             {
                 botConnection.Open();
             }
-            catch(SqlException ex)
+            catch (SqlException ex)
             {
                 Console.Write(ex.Message);
             }
@@ -71,9 +72,23 @@ namespace DCordBot
         {
             commands = new CommandService();
 
+            var options = new LavalinkNodeOptions
+            {
+                RestUri = "http://localhost:8080/",
+                WebSocketUri = "ws://localhost:8080/",
+                Password = "youshallnotpass",
+                AllowResuming = true,
+                BufferSize = 1024 * 1024,// 1 MiB
+                DisconnectOnStop = false,
+                ReconnectStrategy = ReconnectStrategies.DefaultStrategy,
+                DebugPayloads = false
+            };
+
             services = new ServiceCollection()
                 .AddSingleton(client)
                 .AddSingleton(commands)
+                .AddSingleton<IDiscordClientWrapper, DiscordClientWrapper>()
+                .AddSingleton(options)
                 .BuildServiceProvider();
             await RegisterCommandsAsync();
 

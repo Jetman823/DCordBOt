@@ -307,6 +307,8 @@ C:\Users\Misty\Desktop\ssd file backup\DCordBot\DCordBot\bin\Debug\System.Runtim
 C:\Users\Misty\Desktop\ssd file backup\DCordBot\DCordBot\bin\Debug\System.Threading.Tasks.Extensions.xml
 C:\Users\Misty\Desktop\ssd file backup\DCordBot\DCordBot\bin\Debug\Victoria.xml
 C:\Users\Misty\Desktop\ssd file backup\DCordBot\DCordBot\bin\Debug\Newtonsoft.Json.pdb
+C:\Users\Misty\Desktop\ssd file backup\DCordBot\DCordBot\bin\Debug\Lavalink4NET.dll
+C:\Users\Misty\Desktop\ssd file backup\DCordBot\DCordBot\bin\Debug\Lavalink4NET.xml
 C:\Users\Misty\Desktop\ssd file backup\DCordBot\DCordBot\bin\Debug\Microsoft.Win32.Primitives.dll
 C:\Users\Misty\Desktop\ssd file backup\DCordBot\DCordBot\bin\Debug\netstandard.dll
 C:\Users\Misty\Desktop\ssd file backup\DCordBot\DCordBot\bin\Debug\System.AppContext.dll
