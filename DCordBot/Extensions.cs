@@ -4,6 +4,7 @@
     {
         public static bool Anyof(this string haystack, params string[] needles)
         {
+
             foreach (string needle in needles)
             {
                 if (haystack.Contains(needle))

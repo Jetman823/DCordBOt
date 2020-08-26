@@ -18,11 +18,12 @@ namespace DCordBot
             List<ImageData> images = new List<ImageData>();
             Random random = new Random();
             ImageData? randImage = null;
+            string[] tagbreakdown = tags.Split(' ');
             if (tags.Length > 0)
             {
                 foreach(ImageData image in NFSW.yandImages)
                 {
-                    bool result = Extensions.Anyof(image.Tags, tags);
+                    bool result = Extensions.Anyof(image.Tags, tagbreakdown);
                     if (result == true)
                         images.Add(image);
                 }
@@ -58,13 +59,14 @@ namespace DCordBot
             List<ImageData> images = new List<ImageData>();
             Random random = new Random();
             ImageData? randImage = null;
+            string[] tagbreakdown = tags.Split(' ');
             if (tags.Length > 0)
             {
 
 
                 foreach (ImageData image in NFSW.gelBorImages)
                 {
-                    bool result = Extensions.Anyof(image.Tags, tags);
+                    bool result = Extensions.Anyof(image.Tags, tagbreakdown);
                     if (result == true)
                         images.Add(image);
                 }
@@ -99,13 +101,14 @@ namespace DCordBot
             List<ImageData> images = new List<ImageData>();
             Random random = new Random();
             ImageData? randImage = null;
+            string[] tagbreakdown = tags.Split(' ');
             if (tags.Length > 0)
             {
 
 
                 foreach (ImageData image in NFSW.danBorImages)
                 {
-                    bool result = Extensions.Anyof(image.Tags, tags);
+                    bool result = Extensions.Anyof(image.Tags, tagbreakdown);
                     if (result == true)
                         images.Add(image);
                 }

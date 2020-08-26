@@ -3,22 +3,22 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Reflection;
 using System.Threading.Tasks;
-using Lavalink4NET;
 
 namespace DCordBot
 {
     class Program
-    {
-        public static LavalinkNode audioService = null;
+    { 
         public static CommandService commands = null;
         private IServiceProvider services = null;
         public static SocketCommandContext context = null;
         public static SqlConnection botConnection = null;
         public static DiscordSocketClient client;
         public static NFSW nFSWImages = new NFSW();
+        public static Dictionary<ulong, List<ulong>> guildPlayers = null;
 #if GUNZ
         public ZItemManager itemManager;
         public static SqlConnection connection = null;
@@ -37,7 +37,7 @@ namespace DCordBot
                 Console.Write(exception.Message);
             }
 #endif
-            botConnection = new SqlConnection(@"Server=DESKTOP-TMJAO33\SQLEXPRESS;Database=DCordBot;Trusted_Connection=Yes;");
+            botConnection = new SqlConnection(@"Server=DESKTOP-1E2U1VN\SQLEXPRESS;Database=DCordBot;Trusted_Connection=Yes;");
             try
             {
                 botConnection.Open();
@@ -59,7 +59,6 @@ namespace DCordBot
 #endif
 
             nFSWImages.Load();
-            
         }
 
         public static void Main(string[] args)
@@ -72,28 +71,15 @@ namespace DCordBot
         {
             commands = new CommandService();
 
-            var options = new LavalinkNodeOptions
-            {
-                RestUri = "http://localhost:8080/",
-                WebSocketUri = "ws://localhost:8080/",
-                Password = "youshallnotpass",
-                AllowResuming = true,
-                BufferSize = 1024 * 1024,// 1 MiB
-                DisconnectOnStop = false,
-                ReconnectStrategy = ReconnectStrategies.DefaultStrategy,
-                DebugPayloads = false
-            };
 
             services = new ServiceCollection()
                 .AddSingleton(client)
                 .AddSingleton(commands)
-                .AddSingleton<IDiscordClientWrapper, DiscordClientWrapper>()
-                .AddSingleton(options)
                 .BuildServiceProvider();
             await RegisterCommandsAsync();
-
-            await client.LoginAsync(Discord.TokenType.Bot, "NDM2Njg2NjAzMzk4OTM4NjQ0.XfQO1g.bf5lego0eEexHKHFKygYEfFmRJc", true);
+            await client.LoginAsync(TokenType.Bot, "NDM2Njg2NjAzMzk4OTM4NjQ0.XfQO1g.bf5lego0eEexHKHFKygYEfFmRJc", true);
             await client.StartAsync();
+            await LoadGuildData();
 
             await Task.Delay(-1);
 
@@ -156,6 +142,11 @@ namespace DCordBot
         private async Task UserJoined(SocketGuildUser user)
         {
 
+            SqlBuilder builder = new SqlBuilder("spInsertUser", System.Data.CommandType.StoredProcedure);
+            builder.AddParameter("@ServerID", System.Data.SqlDbType.BigInt, (long)user.Guild.Id);
+            builder.AddParameter("@UserID", System.Data.SqlDbType.BigInt, (long)user.Id);
+            await builder.ExecuteNonQueryAsync();
+
             ITextChannel channel = user.Guild.DefaultChannel;
             Embedder embedder = new Embedder();
             embedder.AddImageUrl("https://uploads.disquscdn.com/images/4df0100942caa8c7688300d788f69fbe905d041d1969fe51b9442caca6f88be8.gif");
@@ -167,6 +158,11 @@ namespace DCordBot
 
         private async Task UserLeft(SocketGuildUser user)
         {
+            SqlBuilder builder = new SqlBuilder("spRemoveUser", System.Data.CommandType.StoredProcedure);
+            builder.AddParameter("@ServerID", System.Data.SqlDbType.BigInt, (long)user.Guild.Id);
+            builder.AddParameter("@UserID", System.Data.SqlDbType.BigInt, (long)user.Id);
+            await builder.ExecuteNonQueryAsync();
+
             ITextChannel channel = user.Guild.DefaultChannel;
             Embedder embedder = new Embedder();
             embedder.AddImageUrl("http://pa1.narvii.com/5994/b140573f8431754feb055d6e592321cc13b53b14_00.gif");
@@ -188,6 +184,34 @@ namespace DCordBot
             SqlBuilder builder = new SqlBuilder("spRemoveServer", System.Data.CommandType.StoredProcedure);
             builder.AddParameter("@ServerID", System.Data.SqlDbType.BigInt, (long)guild.Id);
             await builder.ExecuteNonQueryAsync();
+        }
+
+        private async Task LoadGuildData()
+        {
+            return;
+            guildPlayers = new Dictionary<ulong, List<ulong>>();
+            using (SqlBuilder builder = new SqlBuilder("spFetchGuilds",System.Data.CommandType.StoredProcedure))
+            {
+                SqlDataReader reader = await builder.ExecuteReader();
+                while(await reader.ReadAsync())
+                {
+                    ulong GuildID = Convert.ToUInt64(reader.GetInt64(0));
+
+                    using(SqlBuilder builder1 = new SqlBuilder("spFetchGuildPlayers",System.Data.CommandType.StoredProcedure))
+                    {
+                        List<ulong> playerIDS = new List<ulong>();
+
+                        builder1.AddParameter("@ServerID", System.Data.SqlDbType.BigInt, Convert.ToInt64(GuildID));
+                        SqlDataReader reader1 = await builder1.ExecuteReader();
+                        while (await reader1.ReadAsync())
+                        {
+                            ulong playerID = Convert.ToUInt64(reader1.GetInt64(0));
+                            playerIDS.Add(playerID);
+                        }
+                        guildPlayers.Add(GuildID, playerIDS);
+                    }
+                }
+            }
         }
     }
 }

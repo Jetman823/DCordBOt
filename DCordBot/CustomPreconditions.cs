@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,6 +49,43 @@ namespace DCordBot
                 else if (result == 2)
                 {
                     return PreconditionResult.FromError(message.MentionedUsers.ElementAt(0).Username + " is already married!");
+                }
+
+                return PreconditionResult.FromSuccess();
+            }
+        }
+        public class  CheckBJUser: PreconditionAttribute
+        {
+            public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
+            {
+                SocketMessage message = (SocketMessage)context.Message;
+                SocketUser sender = message.Author;
+
+                if (!BlackJack.bjPlayers.ContainsKey(context.Guild.Id))
+                {
+                    List<BJPlayers> guildPlayers = new List<BJPlayers>();
+                    guildPlayers.Add(new BJPlayers(context.Message.Author.Id, 0, 0));
+                    BlackJack.bjPlayers.Add(context.Guild.Id, guildPlayers);
+                }
+
+
+                bool playerExists = BlackJack.bjPlayers[context.Guild.Id].Exists(x => x.userID == message.Author.Id);
+
+                if(command.Name.Contains("new"))
+                {
+                    if(playerExists == true)
+                    {
+                        return PreconditionResult.FromError("You've already started a game!");
+                    }
+                }
+
+
+                if (command.Name.Contains("hit") || command.Name.Contains("stay"))
+                {
+                    if (playerExists == false)
+                    {
+                        return PreconditionResult.FromError("You need to start a game before you can hit!");
+                    }
                 }
 
                 return PreconditionResult.FromSuccess();
