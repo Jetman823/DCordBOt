@@ -37,7 +37,7 @@ namespace DCordBot
                 Console.Write(exception.Message);
             }
 #endif
-            botConnection = new SqlConnection(@"Server=DESKTOP-1E2U1VN\SQLEXPRESS;Database=DCordBot;Trusted_Connection=Yes;");
+            botConnection = new SqlConnection(@"Server=DESKTOP-1B1L20H\SQLEXPRESS;Database=DCordBot;Trusted_Connection=Yes;");
             try
             {
                 botConnection.Open();

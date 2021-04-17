@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Json;
 using System.Threading.Tasks;
+using static DCordBot.CustomPreconditions;
 
 public struct WordsApi
 {
@@ -18,6 +19,7 @@ namespace DCordBot
     {
         [Command("define")]
         [Summary("test")]
+        [RequireCoolDown]
         public async Task DefineASync([Remainder] string word)
         {
             string apicall = "https://dictionaryapi.com/api/v3/references/collegiate/json/";

@@ -52,9 +52,11 @@ namespace DCordBot
             }
 
             SqlBuilder builder = new SqlBuilder("spCheckUserMarriageStatus", CommandType.StoredProcedure);
-            builder.AddParameter("@SENDER", SqlDbType.BigInt, Convert.ToInt64(message.Author.Id));
             builder.AddParameter("@TARGET", SqlDbType.BigInt, Convert.ToInt64(userToSearch.Id));
-            builder.AddParameter("@ServerID", SqlDbType.BigInt, Convert.ToInt64(message.Channel.Id));
+            builder.AddParameter("@SERVERID", SqlDbType.BigInt, Convert.ToInt64(message.Channel.Id));
+            builder.AddParameter("@RESULT", SqlDbType.BigInt, 0);
+            long result = builder.GetReturnValue("@RESULT");
+            
             using (var reader = await builder.ExecuteReader())
             {
                 try

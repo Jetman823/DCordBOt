@@ -19,10 +19,10 @@ namespace DCordBot
             }
             else
             {
-                CommandInfo comm = Program.commands.Commands.FirstOrDefault(x => x.Name == command);
+                CommandInfo comm = Program.commands.Commands.FirstOrDefault(x => x.Name.ToLower() == command.ToLower());
                 message += comm.Name + ":\n" + comm.Summary + "\n";
             }
-            await Discord.UserExtensions.SendMessageAsync(Context.Message.Author, message);
+            await Context.Message.Channel.SendMessageAsync(message);
         }
     }
 }

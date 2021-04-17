@@ -18,9 +18,11 @@ namespace DCordBot
                 var messages = await context.Channel.GetMessagesAsync().FlattenAsync();
                 foreach (IUserMessage message in messages)
                 {
-                    if (message.Timestamp == context.Message.Timestamp)
+                    if (message.Content == context.Message.Content || message.Timestamp == context.Message.Timestamp)
                         continue;
-                    if (message.Content.Contains(command.Name) && message.Timestamp.TimeOfDay.TotalSeconds + 30 > context.Message.Timestamp.TimeOfDay.TotalSeconds)
+
+                    if (message.Content.Contains(command.Name) && (message.Timestamp.Day == context.Message.Timestamp.Day) 
+                        && (message.Timestamp.TimeOfDay.TotalSeconds + 30 > context.Message.Timestamp.TimeOfDay.TotalSeconds))
                     {
                         return PreconditionResult.FromError("This command can only be executed every 30 seconds.");
                     }
