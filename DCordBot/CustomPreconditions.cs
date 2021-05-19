@@ -13,19 +13,25 @@ namespace DCordBot
     {
         public class RequireCoolDown : PreconditionAttribute
         {
+            private readonly int cooldownTime;
+
+            public RequireCoolDown(int cooldown) => cooldownTime = cooldown;
             public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context,CommandInfo command, IServiceProvider services)
             {
-                var messages = await context.Channel.GetMessagesAsync().FlattenAsync();
+                var messages = await context.Channel.GetMessagesAsync(cooldownTime).FlattenAsync();
                 foreach (IUserMessage message in messages)
                 {
-                    if (message.Content == context.Message.Content || message.Timestamp == context.Message.Timestamp)
+                    if (message.Author.IsBot || message.Timestamp == context.Message.Timestamp)
                         continue;
 
-                    if (message.Content.Contains(command.Name) && (message.Timestamp.Day == context.Message.Timestamp.Day) 
-                        && (message.Timestamp.TimeOfDay.TotalSeconds + 30 > context.Message.Timestamp.TimeOfDay.TotalSeconds))
+                    if (message.Timestamp.Date.ToLocalTime() != DateTime.Today)
+                        continue;
+
+                    long timeElapsed = context.Message.Timestamp.ToUnixTimeSeconds() - message.Timestamp.ToUnixTimeSeconds();
+                    if (timeElapsed < cooldownTime)
                     {
                         return PreconditionResult.FromError("This command can only be executed every 30 seconds.");
-                    }
+                    }break;
                 }
                 return PreconditionResult.FromSuccess();
             }
@@ -68,6 +74,10 @@ namespace DCordBot
                     List<BJPlayers> guildPlayers = new List<BJPlayers>();
                     guildPlayers.Add(new BJPlayers(context.Message.Author.Id, 0, 0));
                     BlackJack.bjPlayers.Add(context.Guild.Id, guildPlayers);
+                }
+                else
+                {
+                    return PreconditionResult.FromError("You've already started a game!");
                 }
 
 

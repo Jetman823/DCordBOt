@@ -10,91 +10,91 @@
        <Types>
         <Type Name="CustomPreconditions+CheckMarriageStatus+&lt;CheckPermissionsAsync&gt;d__0" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'CustomPreconditions.CheckMarriageStatus.&lt;CheckPermissionsAsync&gt;d__0' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
           </Message>
          </Messages>
         </Type>
         <Type Name="Dictionary+&lt;DefineASync&gt;d__0" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Dictionary.&lt;DefineASync&gt;d__0' because it creates members of the following IDisposable types: 'WebClient'.</Issue>
           </Message>
          </Messages>
         </Type>
         <Type Name="Marriage+&lt;ResponseAcceptProposal&gt;d__3" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Marriage.&lt;ResponseAcceptProposal&gt;d__3' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
           </Message>
          </Messages>
         </Type>
         <Type Name="Marriage+&lt;ResponseDivorce&gt;d__5" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Marriage.&lt;ResponseDivorce&gt;d__5' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
           </Message>
          </Messages>
         </Type>
         <Type Name="Marriage+&lt;ResponseMarriageStatus&gt;d__1" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Marriage.&lt;ResponseMarriageStatus&gt;d__1' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
           </Message>
          </Messages>
         </Type>
-        <Type Name="Program+&lt;JoinedGuild&gt;d__16" Kind="Class" Accessibility="Private" ExternallyVisible="False">
+        <Type Name="Program+&lt;JoinedGuild&gt;d__20" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
-           <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Program.&lt;JoinedGuild&gt;d__16' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
+           <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Program.&lt;JoinedGuild&gt;d__20' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
           </Message>
          </Messages>
         </Type>
-        <Type Name="Program+&lt;LeftGuild&gt;d__17" Kind="Class" Accessibility="Private" ExternallyVisible="False">
+        <Type Name="Program+&lt;LeftGuild&gt;d__21" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
-           <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Program.&lt;LeftGuild&gt;d__17' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
+           <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Program.&lt;LeftGuild&gt;d__21' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
           </Message>
          </Messages>
         </Type>
-        <Type Name="Program+&lt;LoadGuildData&gt;d__18" Kind="Class" Accessibility="Private" ExternallyVisible="False">
+        <Type Name="Program+&lt;LoadGuildData&gt;d__22" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
-           <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Program.&lt;LoadGuildData&gt;d__18' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
+           <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Program.&lt;LoadGuildData&gt;d__22' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
           </Message>
          </Messages>
         </Type>
-        <Type Name="Program+&lt;UserJoined&gt;d__14" Kind="Class" Accessibility="Private" ExternallyVisible="False">
+        <Type Name="Program+&lt;UserJoined&gt;d__18" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
-           <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Program.&lt;UserJoined&gt;d__14' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
+           <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Program.&lt;UserJoined&gt;d__18' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
           </Message>
          </Messages>
         </Type>
-        <Type Name="Program+&lt;UserLeft&gt;d__15" Kind="Class" Accessibility="Private" ExternallyVisible="False">
+        <Type Name="Program+&lt;UserLeft&gt;d__19" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
-           <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Program.&lt;UserLeft&gt;d__15' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
+           <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Program.&lt;UserLeft&gt;d__19' because it creates members of the following IDisposable types: 'SqlBuilder'.</Issue>
           </Message>
          </Messages>
         </Type>
         <Type Name="Runescape+&lt;GetHiScoreByUserOSRS&gt;d__0" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Runescape.&lt;GetHiScoreByUserOSRS&gt;d__0' because it creates members of the following IDisposable types: 'WebClient'.</Issue>
           </Message>
          </Messages>
         </Type>
         <Type Name="Runescape+&lt;GetItemInfo&gt;d__3" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Runescape.&lt;GetItemInfo&gt;d__3' because it creates members of the following IDisposable types: 'WebClient'.</Issue>
           </Message>
          </Messages>
         </Type>
         <Type Name="Runescape+&lt;GetRs3HiScoreByName&gt;d__1" Kind="Class" Accessibility="Private" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'Runescape.&lt;GetRs3HiScoreByName&gt;d__1' because it creates members of the following IDisposable types: 'WebClient'.</Issue>
           </Message>
          </Messages>
@@ -103,7 +103,7 @@
          <Members>
           <Member Name="#.ctor(System.String,System.Data.CommandType)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2021-04-17 03:14:48Z" FixCategory="DependsOnFix">
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2021-05-19 01:13:15Z" FixCategory="DependsOnFix">
              <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="C:\Users\Jeff\Desktop\dbot\DCordBot" File="SqlBuilder.cs" Line="13">The query string passed to 'SqlCommand.SqlCommand(string, SqlConnection)' in 'SqlBuilder.SqlBuilder(string, CommandType)' could contain the following variables 'commandName'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
             </Message>
            </Messages>

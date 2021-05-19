@@ -10,7 +10,6 @@
                 if (haystack.Contains(needle))
                     return true;
             }
-
             return false;
         }
     }

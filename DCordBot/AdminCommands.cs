@@ -1,6 +1,9 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DCordBot
@@ -57,6 +60,34 @@ namespace DCordBot
             foreach(var user in usersToUnBan)
             {
                 await ((IGuild)Context.Message.Channel).RemoveBanAsync(user);
+            }
+        }
+        [Command("ClearChat")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task ResponseClearChat([Remainder] string messageCount)
+        {
+            int count = Convert.ToInt32(messageCount);
+            var messages = await Context.Channel.GetMessagesAsync(count).FlattenAsync();
+            await (Context.Channel as SocketTextChannel).DeleteMessagesAsync(messages);
+        }
+
+        [Command("mute")]
+        [RequireUserPermission(GuildPermission.MuteMembers)]
+        public async Task MuteUser([Remainder] string name)
+        {
+            foreach(SocketUser user in Context.Message.MentionedUsers)
+            {
+                await (user as SocketGuildUser).AddRoleAsync(Context.Guild.Roles.FirstOrDefault(x => x.Name == "Muted"));
+            }
+        }
+
+        [Command("unmute")]
+        [RequireUserPermission(GuildPermission.MuteMembers)]
+        public async Task UnMuteUser([Remainder] string name)
+        {
+            foreach (SocketUser user in Context.Message.MentionedUsers)
+            {
+                await (user as SocketGuildUser).RemoveRoleAsync(Context.Guild.Roles.FirstOrDefault(x => x.Name == "Muted"));
             }
         }
     }

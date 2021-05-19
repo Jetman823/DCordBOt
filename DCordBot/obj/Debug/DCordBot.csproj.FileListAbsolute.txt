@@ -696,3 +696,6 @@ C:\Users\Jeff\Desktop\dbot\DCordBot\obj\Debug\DCordBot.csproj.CoreCompileInputs.
 C:\Users\Jeff\Desktop\dbot\DCordBot\obj\Debug\DCordBot.csproj.CopyComplete
 C:\Users\Jeff\Desktop\dbot\DCordBot\obj\Debug\DCordBot.exe
 C:\Users\Jeff\Desktop\dbot\DCordBot\obj\Debug\DCordBot.pdb
+C:\Users\Jeff\Desktop\dbot\DCordBot\obj\Debug\DCordBot.Resource1.resources
+C:\Users\Jeff\Desktop\dbot\DCordBot\obj\Debug\DCordBot.csproj.GenerateResource.cache
+C:\Users\Jeff\Desktop\dbot\DCordBot\obj\Debug\DCordBot.csprojAssemblyReference.cache

@@ -19,7 +19,7 @@ namespace DCordBot
     {
         [Command("define")]
         [Summary("test")]
-        [RequireCoolDown]
+        [RequireCoolDown(30)]
         public async Task DefineASync([Remainder] string word)
         {
             string apicall = "https://dictionaryapi.com/api/v3/references/collegiate/json/";

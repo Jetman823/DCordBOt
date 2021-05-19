@@ -5,20 +5,26 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Reflection;
+using System.Resources;
+using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using static DCordBot.CustomPreconditions;
 
 namespace DCordBot
 {
     class Program
-    { 
+    {
+        public static DiscordSocketConfig config = null;
         public static CommandService commands = null;
         private IServiceProvider services = null;
         public static SocketCommandContext context = null;
         public static SqlConnection botConnection = null;
         public static DiscordSocketClient client;
-        public static NFSW nFSWImages = new NFSW();
         public static Dictionary<ulong, List<ulong>> guildPlayers = null;
+        public List<string> curseWords = null;
 #if GUNZ
         public ZItemManager itemManager;
         public static SqlConnection connection = null;
@@ -26,6 +32,7 @@ namespace DCordBot
 
         public Program()
         {
+            LoadCurseFilter();
 #if GUNZ
             connection = new SqlConnection(@"Server=DESKTOP-TMJAO33\SQLEXPRESS;Database=GunZDB15;Trusted_Connection=Yes;");
             try
@@ -53,12 +60,13 @@ namespace DCordBot
             client.UserLeft += UserLeft;
             client.JoinedGuild += JoinedGuild;
             client.LeftGuild += LeftGuild;
+            client.MessageReceived += MessageReceieved;
+            client.ReactionAdded += ReactionAdded;
+            client.ReactionRemoved += ReactionRemoved;
 #if GUNZ
             itemManager = new ZItemManager();
             itemManager.Load();
 #endif
-
-            nFSWImages.Load();
         }
 
         public static void Main(string[] args)
@@ -67,31 +75,30 @@ namespace DCordBot
         }
 
 
+
+
         public async Task StartBot()
         {
             commands = new CommandService();
-
+            config = new DiscordSocketConfig();
+            config.AlwaysDownloadUsers = true;
 
             services = new ServiceCollection()
                 .AddSingleton(client)
                 .AddSingleton(commands)
+                .AddSingleton(config)
                 .BuildServiceProvider();
             await RegisterCommandsAsync();
             await client.LoginAsync(TokenType.Bot, "NDM2Njg2NjAzMzk4OTM4NjQ0.XfQO1g.bf5lego0eEexHKHFKygYEfFmRJc", true);
             await client.StartAsync();
             await LoadGuildData();
-
             await Task.Delay(-1);
 
         }
 
         public async Task RegisterCommandsAsync()
         {
-            client.MessageReceived += MessageReceieved;
-
             await commands.AddModulesAsync(Assembly.GetEntryAssembly(),services);
-
-
             commands.CommandExecuted += CommandExecuted;
         }
 
@@ -109,6 +116,7 @@ namespace DCordBot
 
         public Task ReadyAsync()
         {
+            client.DownloadUsersAsync(client.Guilds);
             Console.WriteLine("Ready to connect");
             return Task.CompletedTask;
         }
@@ -119,12 +127,18 @@ namespace DCordBot
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
+        /// 
         private async Task MessageReceieved(SocketMessage message)
         {
 #if GUNZ
             if (connection.State != System.Data.ConnectionState.Open)
                 return;
 #endif
+            if (Extensions.Anyof(message.Content, curseWords.ToArray()))
+            {
+                await message.DeleteAsync();
+                return;
+            }
 
             SocketUserMessage userMessage = message as SocketUserMessage;
             if (userMessage.Author.IsBot || userMessage == null)
@@ -133,12 +147,63 @@ namespace DCordBot
             int argPos = 0;
             if (userMessage.HasStringPrefix("!", ref argPos) ||
                 userMessage.HasMentionPrefix(client.CurrentUser, ref argPos))
-            { 
+            {
                 context = new SocketCommandContext(client, message as SocketUserMessage);
                 await commands.ExecuteAsync(context, 1, services);
-           }
+            }
         }
-        
+
+        private void LoadCurseFilter()
+        {
+            curseWords = new List<string>();
+            string[] lines = System.IO.File.ReadAllLines("cursefilter.txt");
+            foreach(string line in lines)
+            {
+                curseWords.Add(line);
+            }
+        }
+
+        private async Task ReactionAdded(Cacheable<IUserMessage,ulong> cacheable,ISocketMessageChannel channel,SocketReaction reaction)
+        {
+            if (reaction.Channel.Name == "generalroles")
+            {
+                SocketGuildUser user = (SocketGuildUser)await channel.GetUserAsync(reaction.UserId);
+
+                byte[] utf16Data = Encoding.BigEndianUnicode.GetBytes(reaction.Emote.Name);
+                byte[] utf16One = Encoding.BigEndianUnicode.GetBytes("1️⃣");
+
+                SocketRole role = user.Roles.FirstOrDefault(x => x.Name == "Male");
+
+                if (utf16Data.SequenceEqual(utf16One) && role == null)
+                {
+                    await user.AddRoleAsync(user.Guild.Roles.FirstOrDefault(x => x.Name == "Male"));
+                }
+            }
+            await reaction.Message.Value.AddReactionAsync(reaction.Emote);
+        }
+
+        private async Task ReactionRemoved(Cacheable<IUserMessage,ulong> cacheable, ISocketMessageChannel channel, SocketReaction reaction)
+        {
+            if (reaction.Channel.Name == "generalroles")
+            {
+                SocketGuildUser user = (SocketGuildUser)await channel.GetUserAsync(reaction.UserId);
+                IReadOnlyCollection<SocketRole> roles = user.Guild.Roles;
+
+                byte[] utf16Data = Encoding.BigEndianUnicode.GetBytes(reaction.Emote.Name);
+                byte[] utf16One = Encoding.BigEndianUnicode.GetBytes("1️⃣");
+
+                SocketRole role = user.Roles.FirstOrDefault(x => x.Name == "Male");
+
+                if (utf16Data.SequenceEqual(utf16One) && role != null)
+                {
+                    await user.RemoveRoleAsync(user.Guild.Roles.FirstOrDefault(x => x.Name == "Male"));
+                }
+            }
+            await reaction.Message.Value.RemoveReactionAsync(reaction.Emote,reaction.User.Value);
+        }
+
+
+
         private async Task UserJoined(SocketGuildUser user)
         {
 
