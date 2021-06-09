@@ -55,27 +55,16 @@ namespace DCordBot
         //TODO: finish this
         [Command("bjnew")]
         [Summary("Starts a new blackjack game")]
-        [CheckBJUser]
+        [AddBJUser]
         public async Task ResponseBjNew()
         {
-
-
-            if (bjPlayers[Context.Guild.Id].Select(x => x.userID == Context.Message.Author.Id) == null)
-            {
-                var player = bjPlayers[Context.Guild.Id].Find(x => x.userID == Context.Message.Author.Id);
-
-                BJPlayers bjPlayer = new BJPlayers(Context.Message.Author.Id, 0, 0);
-                bjPlayers[Context.Guild.Id].Add(bjPlayer);
-            }
+            //TODO:
         }
 
         [Command("bjhit")]
-        [CheckBJUser]
+        [HitBJUser]
         public async Task ResponseBjHit()
         {
-            if (bjPlayers[Context.Guild.Id].Select(x => x.userID == Context.Message.Author.Id) == null)
-                return;
-
             BJPlayers player = bjPlayers[Context.Guild.Id].Find(x => x.userID == Context.Message.Author.Id);
             int playerCard = 5;
             int botCard = 4;
@@ -94,7 +83,7 @@ namespace DCordBot
         }
 
         [Command("bjstay")]
-        [CheckBJUser]
+        [StayBJUser]
         private async Task ResponseBjStay(SocketMessage message, SocketUser sender)
         {
 

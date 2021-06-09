@@ -11,7 +11,6 @@ using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using static DCordBot.CustomPreconditions;
 
 namespace DCordBot
 {

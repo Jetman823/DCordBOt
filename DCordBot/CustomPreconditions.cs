@@ -16,7 +16,7 @@ namespace DCordBot
             private readonly int cooldownTime;
 
             public RequireCoolDown(int cooldown) => cooldownTime = cooldown;
-            public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context,CommandInfo command, IServiceProvider services)
+            public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
             {
                 var messages = await context.Channel.GetMessagesAsync(cooldownTime).FlattenAsync();
                 foreach (IUserMessage message in messages)
@@ -31,7 +31,8 @@ namespace DCordBot
                     if (timeElapsed < cooldownTime)
                     {
                         return PreconditionResult.FromError("This command can only be executed every 30 seconds.");
-                    }break;
+                    }
+                    break;
                 }
                 return PreconditionResult.FromSuccess();
             }
@@ -62,42 +63,62 @@ namespace DCordBot
                 return PreconditionResult.FromSuccess();
             }
         }
-        public class  CheckBJUser: PreconditionAttribute
+        public class AddBJUser : PreconditionAttribute
         {
             public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
             {
                 SocketMessage message = (SocketMessage)context.Message;
                 SocketUser sender = message.Author;
-
-                if (!BlackJack.bjPlayers.ContainsKey(context.Guild.Id))
+                ///TODO:
+                ///make this async!
+                /// 
+                bool result = new Task<bool>(() => BlackJack.bjPlayers.ContainsKey(context.Guild.Id)).Result;
+                if(result == false)
                 {
                     List<BJPlayers> guildPlayers = new List<BJPlayers>();
                     guildPlayers.Add(new BJPlayers(context.Message.Author.Id, 0, 0));
                     BlackJack.bjPlayers.Add(context.Guild.Id, guildPlayers);
+                    return PreconditionResult.FromSuccess();
                 }
                 else
                 {
-                    return PreconditionResult.FromError("You've already started a game!");
-                }
-
-
-                bool playerExists = BlackJack.bjPlayers[context.Guild.Id].Exists(x => x.userID == message.Author.Id);
-
-                if(command.Name.Contains("new"))
-                {
-                    if(playerExists == true)
+                    BJPlayers player = new Task<BJPlayers>(() => BlackJack.bjPlayers[context.Guild.Id].Find(x => x.userID == context.Message.Author.Id)).Result;
+                    if(player == null)
+                    {
+                        BlackJack.bjPlayers[context.Guild.Id].Add(player);
+                        return PreconditionResult.FromSuccess();
+                    }
+                    else
                     {
                         return PreconditionResult.FromError("You've already started a game!");
                     }
                 }
+            }
+        }
 
-
-                if (command.Name.Contains("hit") || command.Name.Contains("stay"))
+        public class HitBJUser : PreconditionAttribute
+        {
+            //TODO:
+            public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
+            {
+                if (BlackJack.bjPlayers[context.Guild.Id].Select(x => x.userID == context.Message.Author.Id) == null)
                 {
-                    if (playerExists == false)
-                    {
-                        return PreconditionResult.FromError("You need to start a game before you can hit!");
-                    }
+                    return PreconditionResult.FromError("You haven't started a game yet!");
+                }
+
+                return PreconditionResult.FromSuccess();
+            }
+        }
+
+        public class StayBJUser : PreconditionAttribute
+        {
+            //TODO:
+            public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
+            {
+
+                if (BlackJack.bjPlayers[context.Guild.Id].Select(x => x.userID == context.Message.Author.Id) == null)
+                {
+                    return PreconditionResult.FromError("You haven't started a game yet!");
                 }
 
                 return PreconditionResult.FromSuccess();
